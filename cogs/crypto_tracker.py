@@ -76,7 +76,7 @@ class CryptoTracker(commands.Cog):
             crypto_embed.add_field(name='Last 24 Hours', value='{}% {}'.format(percent_change_24h, graph_emoji_24h))
             crypto_embed.add_field(name='Last 7 Days', value='{}% {}'.format(percent_change_7d, graph_emoji_7d))
             crypto_embed.set_image(url=graph_url + coin_rank + '.png')
-            # crypto_embed.set_thumbnail(url=thumb_url + coin_symbol + '.png')
+            crypto_embed.set_thumbnail(url=thumb_url + coin_symbol + '.png')
             crypto_embed.set_footer(text='Wrong information? Try \'!help crypto\' or go to {}'.format(base_url))
             await context.send(embed=crypto_embed)
 
