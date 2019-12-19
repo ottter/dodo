@@ -19,6 +19,7 @@ class Users(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command()
     async def lights(self, context):
         # rename_folders(f'{imgdir}/lights/')
