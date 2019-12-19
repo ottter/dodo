@@ -5,7 +5,6 @@ import discord
 import sqlite3
 import config
 import json
-import sys
 
 weather_description = """ ====  In-depth Weather Forecast Details  ====
                                 .weather [id/name]           Tells you the weather of [location]

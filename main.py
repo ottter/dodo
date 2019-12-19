@@ -1,9 +1,8 @@
-import discord
 import config
 import os
 from discord.ext import commands
 
-bot = commands.Bot(command_prefix = '.')
+bot = commands.Bot(command_prefix = config.prefix)
 
 
 @bot.event
@@ -29,7 +28,6 @@ async def on_message(context):
 
 
 def load_extensions():
-    print('test')
     for filename in os.listdir('./cogs'):
         cog = filename[:-3]
         if filename.endswith('.py'):
@@ -51,4 +49,3 @@ def log_in():
 
 if __name__ == '__main__':
     log_in()
-
