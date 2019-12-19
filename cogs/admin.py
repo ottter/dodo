@@ -1,5 +1,6 @@
 from discord.ext import commands
 
+
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -8,6 +9,7 @@ class Admin(commands.Cog):
     @commands.command(name='reload', hidden=True, pass_context=True)
     async def reload(self, context, module: str):
         admins = ['150125122408153088']
+        print('ts')
         if str(context.message.author.id) in admins:
             try:
                 self.bot.unload_extension(module)
@@ -18,6 +20,7 @@ class Admin(commands.Cog):
                 await context.send('Error: Did you use dot path (cogs.admin)?')
         else:
             await context.send('Admin Only')
+
 
 def setup(bot):
     bot.add_cog(Admin(bot))
