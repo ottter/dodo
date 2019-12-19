@@ -6,7 +6,7 @@ import sqlite3
 import config
 import json
 
-weather_description = """ ====  In-depth Weather Forecast Details  ====
+weather_description = """  ====  In-depth Weather Forecast Details  ====
                                 .weather [id/name]           Tells you the weather of [location]
                                 .forecast [id/name]          Tells you the forecast of [location]
                                 .wset home [id/name]         Sets your home location
@@ -27,8 +27,8 @@ def error_handler(user_city):
     error_embed = discord.Embed(title="Open Weather Map",
                                 url='{}{}'.format(base_url, user_city),
                                 color=0xff1717)
-    error_embed.set_author(name='WeatherCog - Providing weather updates from OWM',
-                           url='https://github.com/ottter/discord-bot',
+    error_embed.set_author(name='WeatherBot - Providing weather updates from OWM',
+                           url='https://openweathermap.org/',
                            icon_url='https://puu.sh/AIA3L/af06b7ffbe.png')
     error_embed.add_field(name="Non-existent location, or unable to find",
                           value="The link above will take you to what you tried searching for. ")
@@ -243,8 +243,8 @@ class Weather(commands.Cog):
                                           url=data_url, description='Right now it is {}°{} {}'
                                           .format(weather['temp'], temp_sign, sky_deets[0]), color=0x16e40c)
             weather_embed.set_thumbnail(url=f'{data_icon}')
-            weather_embed.set_author(name='WeatherCog - Providing weather updates from OWM',
-                                     url='https://github.com/ottter/discord-bot',
+            weather_embed.set_author(name='WeatherBot - Providing weather updates from OWM',
+                                     url='https://openweathermap.org/',
                                      icon_url='https://puu.sh/AIA3L/af06b7ffbe.png')
             weather_embed.add_field(name='Current Temp', value='{}°{}'.format(weather['temp'], temp_sign))
             weather_embed.add_field(name='High & Low Temp',
