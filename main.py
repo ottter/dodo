@@ -1,9 +1,9 @@
 import discord
 import config
+import os
 from discord.ext import commands
 
-Bot = discord.Client()
-bot = commands.Bot(command_prefix=config.bot_prefix, description=config.bot_description)
+bot = commands.Bot(command_prefix = '.')
 
 
 @bot.event
@@ -25,17 +25,20 @@ async def on_message(context):
     if message.find('president trump') != -1:
         await context.channel.send('President Trump, the Impeached*')
 
+    await bot.process_commands(context)
 
 if __name__ == '__main__':
-    for extension in config.startup_extensions:
-        try:
-            bot.load_extension(extension)
-            print(f'Loaded extension: {extension}')
-        except Exception as err:
-            exc = f'{type(err).__name__}: {err}'
-            print(f'Failed to load extension {extension}\n{exc}')
+    for filename in os.listdir('./cogs'):
+        cog = filename[:-3]
+        if filename.endswith('.py'):
+            try:
+                bot.load_extension(f'cogs.{cog}')
+                print(f'Loaded extension: {cog}')
+            except Exception as err:
+                exc = f'{type(err).__name__}: {err}'
+                print(f'Failed to load extension {cog}\n{exc}')
 
-    print('\nAttempting to log in...')
+    print('Attempting to log in...')
 
     try:
         bot.run(config.discord_token)

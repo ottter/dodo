@@ -7,6 +7,10 @@ class Trump(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command()
+    async def trump(self, context):
+        await context.send('test')
+
 
 def setup(bot):
     bot.add_cog(Trump(bot))
