@@ -8,7 +8,7 @@ import config
 import json
 
 
-class PriceChecker(commands.Cog):
+class CryptoTracker(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -89,4 +89,4 @@ class PriceChecker(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(PriceChecker(bot))
+    bot.add_cog(CryptoTracker(bot))

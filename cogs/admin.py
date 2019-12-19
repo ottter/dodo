@@ -15,7 +15,7 @@ class Admin(commands.Cog):
                 await context.send('Reloaded')
             except Exception as err:
                 print('{}: {}'.format(type(err).__name__, err))
-                await context.send('Error reloading cogs')
+                await context.send(err)
         else:
             await context.send('Admin Only')
 
@@ -25,9 +25,10 @@ class Admin(commands.Cog):
             try:
                 self.bot.load_extension(f'cogs.{module}')
                 await context.send('Reloaded')
+
             except Exception as err:
                 print('{}: {}'.format(type(err).__name__, err))
-                await context.send('Error loading cog')
+                await context.send(err)
         else:
             await context.send('Admin Only')
 

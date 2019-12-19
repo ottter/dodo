@@ -27,7 +27,9 @@ async def on_message(context):
 
     await bot.process_commands(context)
 
-if __name__ == '__main__':
+
+def load_extensions():
+    print('test')
     for filename in os.listdir('./cogs'):
         cog = filename[:-3]
         if filename.endswith('.py'):
@@ -38,10 +40,15 @@ if __name__ == '__main__':
                 exc = f'{type(err).__name__}: {err}'
                 print(f'Failed to load extension {cog}\n{exc}')
 
+def log_in():
+    load_extensions()
     print('Attempting to log in...')
-
     try:
         bot.run(config.discord_token)
     except Exception as error:
         print('Discord: Unsuccessful login. Error: ', error)
         quit()
+
+if __name__ == '__main__':
+    log_in()
+
