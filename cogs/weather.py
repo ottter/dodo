@@ -7,17 +7,6 @@ import config
 import json
 
 weather_description = """ ====  In-depth Weather Forecast Details  ====
-                                .weather [id/name]           Tells you the weather of [location]
-                                .forecast [id/name]          Tells you the forecast of [location]
-                                .wset home [id/name]         Sets your home location
-                                .wset unit [imperial/metric] Sets your preferred unit.
-                                .wset [me/home]              Tells you your saved settings
-                                Examples: .wset home london             
-                                          .wset home Los Angeles, US
-                                          .wset unit metric
-                                          .weather home
-                                          .forecast miami
-
                                 Trouble finding your city? Try here: https://www.openweathermap.org/city/"""
 
 base_url = 'https://www.openweathermap.org/city/'
@@ -37,7 +26,7 @@ def error_handler(user_city):
     error_embed.add_field(name="If you don't have a saved home:",
                           value="'.wset home [desired location]' to save your home",
                           inline=False)
-    error_embed.set_footer(text="Try entering '.help weather' for further assistance.")
+    error_embed.set_footer(text="Try entering '.help Weather' for further assistance.")
 
     return error_embed
 
@@ -187,6 +176,9 @@ class Weather(commands.Cog):
                       aliases=['temp', 'w'],
                       pass_context=True)
     async def weather_api(self, context):
+        """weather [location] . . . . . Gives you the weather of [location]
+        Example(s): weather london; weather nyc"""
+
         message = context.message.content
         user_input = message.split(' ', 1)
 
@@ -255,7 +247,7 @@ class Weather(commands.Cog):
             weather_embed.add_field(name='Lat & Long',
                                     value='[{}, {}]({})'.format(weather['latitude'], weather['longitude'], map_url))
             weather_embed.add_field(name='Time Since Last Update', value='{}'.format(time_ago))
-            weather_embed.set_footer(text=f'Wrong information? Try \'.help weather\' or go to {base_url}')
+            weather_embed.set_footer(text=f'Wrong information? Try \'.help Weather\' or go to {base_url}')
             await context.send(embed=weather_embed)
 
         except urllib.error.HTTPError as err:
@@ -275,6 +267,8 @@ class Weather(commands.Cog):
                       aliases=['fcast', 'f'],
                       pass_context=True)
     async def forecast_api(self, context):
+        """forecast [location] . . . . . Gives you the forecast of [location]
+        Example(s): forecast atlanta; forecast paris"""
 
         message = context.message.content
         user_input = message.split(' ', 1)
@@ -368,7 +362,7 @@ class Weather(commands.Cog):
                                      value=f'{temp_min_48}-{temp_max_48}°{temp_sign}\n{sky_48_filter}')
             forecast_embed.add_field(name='Three days from now',
                                      value=f'{temp_min_72}-{temp_max_72}°{temp_sign}\n{sky_72_filter}')
-            forecast_embed.set_footer(text=f'Wrong information? Try \'.help weather\' or go to {base_url}')
+            forecast_embed.set_footer(text=f'Wrong information? Try \'.help Weather\' or go to {base_url}')
             await context.send(embed=forecast_embed)
 
         except urllib.error.HTTPError as err:
@@ -382,11 +376,14 @@ class Weather(commands.Cog):
 
     @commands.cooldown(1, 1, commands.BucketType.user)  # _ use per _ seconds per user/channel/server #
     @commands.command(name='wset',
-                      description='Settings for WeatherBot. ".help weather" for assistance',
+                      description='Settings for WeatherBot. ".help Weather" for assistance',
                       brief='Set user\'s saved weather information',
                       aliases=['fpset', 'weatherset'],
                       pass_context=True)
     async def weather_settings(self, context):
+        """wset home [location] . . . . . . . . Sets your home location
+           wset unit [imperial/metric] . .  Sets your preferred unit.
+           wset [me/home] . . . . . . . . . . . . Tells you your saved settings"""
         conn = sqlite3.connect('user_data.db')
         c = conn.cursor()
 
@@ -420,7 +417,7 @@ class Weather(commands.Cog):
                     c.execute('UPDATE weather_home SET unit=? WHERE discord_id=?', (unit, user))
 
             await context.send('```Success! You set your home location to: {}, {}\n'
-                                  'Not what you\'re looking for? Try \'!help weather\' or go here: {}```'
+                                  'Not what you\'re looking for? Try \'!help Weather\' or go here: {}```'
                                   .format(weather['city'], weather['country'], base_url))
 
         elif args[1] == 'unit':

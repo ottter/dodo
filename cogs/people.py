@@ -27,8 +27,7 @@ class Users(commands.Cog):
     async def lights(self, context):
         # rename_folders(f'{imgdir}/lights/')
         path, dirs, files = next(os.walk(f'{imgdir}/lights'))
-        file_count = len(files) - 1
-        n = random.randint(0, file_count)
+        n = random.randint(0, len(files))
         await context.channel.send(file=discord.File(f'{imgdir}/lights/{n}.png'))
 
     @commands.cooldown(1, 4, commands.BucketType.user)
