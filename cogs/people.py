@@ -18,7 +18,7 @@ def rename_folders(folder):
         i += 1
 
 
-class Users(commands.Cog):
+class People(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -40,4 +40,4 @@ class Users(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Users(bot))
+    bot.add_cog(People(bot))
