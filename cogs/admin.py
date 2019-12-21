@@ -6,7 +6,7 @@ import config
 admins = ['150125122408153088']
 
 class Admin(commands.Cog):
-    """Basic bot admin level controls"""
+    """Basic bot admin-level controls"""
     def __init__(self, bot):
         self.bot = bot
 

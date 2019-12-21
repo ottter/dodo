@@ -389,7 +389,8 @@ class Weather(commands.Cog):
 
         user = context.message.author.id
         message = context.message.content
-        args = message.split(" ", 1)
+        args = message.split(" ", 2)
+        print(args)
 
         if args[1] == 'home':
             home_set = args[2]
