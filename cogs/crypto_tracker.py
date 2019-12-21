@@ -15,7 +15,7 @@ class CryptoTracker(commands.Cog):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command(name='crypto', pass_context=True)
     async def crypto(self, context):
-        conn = sqlite3.connect('user_data.db')
+        conn = sqlite3.connect('./files/user_data.db')
         c = conn.cursor()
 
         base_url = 'https://coinmarketcap.com/currencies/'

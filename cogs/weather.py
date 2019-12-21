@@ -191,7 +191,7 @@ class Weather(commands.Cog):
         try:
             user_city = str(user_input[1])
 
-            conn = sqlite3.connect('user_data.db')
+            conn = sqlite3.connect('./files/user_data.db')
             c = conn.cursor()
             user = context.message.author.id
             c.execute('SELECT * FROM weather_home WHERE discord_id=?', [user])
@@ -279,7 +279,7 @@ class Weather(commands.Cog):
         user_city = 'fucking'  # haven't thought of a better way to implement backup defaults
 
         try:
-            conn = sqlite3.connect('user_data.db')
+            conn = sqlite3.connect('./files/user_data.db')
             c = conn.cursor()
             user = context.message.author.id
             c.execute('SELECT * FROM weather_home WHERE discord_id=?', [user])
@@ -384,7 +384,7 @@ class Weather(commands.Cog):
         """wset home [location] . . . . . . . . Sets your home location
            wset unit [imperial/metric] . .  Sets your preferred unit.
            wset [me/home] . . . . . . . . . . . . Tells you your saved settings"""
-        conn = sqlite3.connect('user_data.db')
+        conn = sqlite3.connect('./files/user_data.db')
         c = conn.cursor()
 
         user = context.message.author.id
