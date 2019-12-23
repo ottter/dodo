@@ -348,8 +348,8 @@ class Weather(commands.Cog):
             forecast_embed = discord.Embed(title='{}, {} - {} :flag_{}:'
                                            .format(weather['city'], weather['country'], weather['id'],
                                                    weather['country'].lower()),
-                                           url=data_url, description='Right now it is {}°{} {}.\nWhat you can'
-                                                                     ' expect to see over the next few days:'
+                                           url=data_url, description='Right now it is {}°{} and {}.\n'
+                                                                     'What you can expect to see:'
                                            .format(weather['temp'], temp_sign, sky_deets[0]), color=0x16e40c)
             forecast_embed.set_thumbnail(url=f'{data_icon}')
             forecast_embed.set_author(name='WeatherCog - Providing forecast updates from OWM',
@@ -359,9 +359,9 @@ class Weather(commands.Cog):
                                      value=f'{temp_min_6} / {temp_max_6}°{temp_sign}\n{sky_6_filter}')
             forecast_embed.add_field(name='Tomorrow',
                                      value=f'{temp_min_24} / {temp_max_24}°{temp_sign}\n{sky_24_filter}')
-            forecast_embed.add_field(name='In two days',
+            forecast_embed.add_field(name='Next few days',
                                      value=f'{temp_min_48} / {temp_max_48}°{temp_sign}\n{sky_48_filter}')
-            forecast_embed.add_field(name='Three days from now',
+            forecast_embed.add_field(name='and beyond',
                                      value=f'{temp_min_72} / {temp_max_72}°{temp_sign}\n{sky_72_filter}')
             forecast_embed.set_footer(text=f'Wrong information? Try \'.help Weather\' or go to {base_url}')
             await context.send(embed=forecast_embed)
