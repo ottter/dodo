@@ -30,6 +30,7 @@ class CryptoPrice(commands.Cog):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command(name='crypto', pass_context=True)
     async def crypto(self, context):
+        """Outputs current information on Cryptocurrency"""
         conn = sqlite3.connect('./files/user_data.db')
         c = conn.cursor()
 

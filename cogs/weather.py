@@ -418,6 +418,8 @@ class Weather(commands.Cog):
                         unit = row[2]
                     c.execute('UPDATE weather_home SET unit=? WHERE discord_id=?', (unit, user))
 
+            c.execute('UPDATE weather_home SET unit=? WHERE discord_id=?', ('metric', user))
+
             await context.send('```Success! You set your home location to: {}, {}\n'
                                   'Not what you\'re looking for? Try \'!help Weather\' or go here: {}```'
                                   .format(weather['city'], weather['country'], base_url))
