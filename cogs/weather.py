@@ -228,6 +228,7 @@ class Weather(commands.Cog):
             time_ago = config.datetime.timedelta(seconds=seconds_ago)
 
             data_icon = icon_url + str(weather['icon']) + '.png'
+            print(weather)
 
             weather_embed = discord.Embed(title='{}, {} - {} :flag_{}:'
                                           .format(weather['city'], weather['country'], weather['id'],

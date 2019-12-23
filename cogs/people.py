@@ -25,6 +25,7 @@ class People(commands.Cog):
     @commands.cooldown(1, 4, commands.BucketType.user)
     @commands.command()
     async def lights(self, context):
+        # TODO: Add an add_lights command
         # rename_folders(f'{imgdir}/lights/')
         path, dirs, files = next(os.walk(f'{imgdir}/lights'))
         n = random.randint(0, len(files))
@@ -33,6 +34,7 @@ class People(commands.Cog):
     @commands.cooldown(1, 4, commands.BucketType.user)
     @commands.command()
     async def jebrim(self, context):
+        # TODO: Add an add_jebrim command
         with open(f'{imgdir}/jebrim.csv') as f:
             reader = csv.reader(f)
             chosen_row = random.choice(list(reader))

@@ -3,7 +3,8 @@ import datetime
 
 server_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
 
-discord_token = 'NjU3MTE3MTQ5NjEyOTk4NjU3.XfsiSw.DMYcS8Mi2uSn4j9-wHzLD6V9RJk'
+# discord_token = 'NjU3MTE3MTQ5NjEyOTk4NjU3.XfsiSw.DMYcS8Mi2uSn4j9-wHzLD6V9RJk'   # Poli
+discord_token = 'NDM2MzMxMzg0MjQwNDcyMDc1.DhSvhA.S5Wr3spFv6bcNaR_fSnq8jPcKFk'   # Dodo
 
 discord_game_played = 'Runescape'
 
