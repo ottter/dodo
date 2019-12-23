@@ -355,14 +355,14 @@ class Weather(commands.Cog):
             forecast_embed.set_author(name='WeatherCog - Providing forecast updates from OWM',
                                       url='https://github.com/ottter/discord-bot',
                                       icon_url='https://puu.sh/AIA3L/af06b7ffbe.png')
-            forecast_embed.add_field(name='Over the next few hours',
-                                     value=f'{temp_min_6}-{temp_max_6}°{temp_sign}\n{sky_6_filter}')
+            forecast_embed.add_field(name='Next few hours',
+                                     value=f'{temp_min_6} / {temp_max_6}°{temp_sign}\n{sky_6_filter}')
             forecast_embed.add_field(name='Tomorrow',
-                                     value=f'{temp_min_24}-{temp_max_24}°{temp_sign}\n{sky_24_filter}')
+                                     value=f'{temp_min_24} / {temp_max_24}°{temp_sign}\n{sky_24_filter}')
             forecast_embed.add_field(name='In two days',
-                                     value=f'{temp_min_48}-{temp_max_48}°{temp_sign}\n{sky_48_filter}')
+                                     value=f'{temp_min_48} / {temp_max_48}°{temp_sign}\n{sky_48_filter}')
             forecast_embed.add_field(name='Three days from now',
-                                     value=f'{temp_min_72}-{temp_max_72}°{temp_sign}\n{sky_72_filter}')
+                                     value=f'{temp_min_72} / {temp_max_72}°{temp_sign}\n{sky_72_filter}')
             forecast_embed.set_footer(text=f'Wrong information? Try \'.help Weather\' or go to {base_url}')
             await context.send(embed=forecast_embed)
 
