@@ -30,7 +30,8 @@ class Help(commands.Cog):
                     if not command_call.cog_name and not command_call.hidden:
                         command_desc += f'{command_call.name} - {command_call.help}\n'
 
-                helper.add_field(name='Misc Commands', value=command_desc[0:len(command_desc) - 1], inline=False)
+                # If commands are in main.py. TODO: Clean this up
+                # helper.add_field(name='Misc Commands', value=command_desc[0:len(command_desc) - 1], inline=False)
 
                 await context.message.author.send('', embed=helper)
                 await context.message.add_reaction(emoji='✉')

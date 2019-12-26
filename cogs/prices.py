@@ -8,24 +8,22 @@ import config
 import json
 import yfinance as yf
 
-class StocksPrice(commands.Cog):
+
+class Prices(commands.Cog):
+    """Crypto and Stock prices"""
     def __init__(self, bot):
         self.bot = bot
 
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command(name='stocks', aliases=['stonks'], pass_context=True)
     async def stock(self, context):
+        """Outputs current information on the Stock Market"""
         # TODO: Get important info to display
         # TODO: https://markets.money.cnn.com/services/api/chart/snapshot_chart_api.asp?symb=MSFT
         stock = yf.Ticker("AAPL").info
         for k, v in stock.items():
             print(f'{k} \t\t {v}')
         await context.send('To be added')
-
-
-class CryptoPrice(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
 
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command(name='crypto', pass_context=True)
@@ -105,5 +103,4 @@ class CryptoPrice(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(CryptoPrice(bot))
-    bot.add_cog(StocksPrice(bot))
+    bot.add_cog(Prices(bot))

@@ -166,6 +166,7 @@ def weather_data(raw_api_dict):
 
 
 class Weather(commands.Cog):
+    """Weather and Forecast updates"""
     def __init__(self, bot):
         self.bot = bot
 

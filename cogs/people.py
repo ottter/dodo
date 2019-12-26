@@ -19,6 +19,7 @@ def rename_folders(folder):
 
 
 class People(commands.Cog):
+    """People-specific memes"""
     def __init__(self, bot):
         self.bot = bot
 

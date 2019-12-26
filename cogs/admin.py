@@ -2,6 +2,7 @@ from discord.ext import commands
 from discord import Game
 import discord
 import config
+import json
 
 admins = ['150125122408153088']
 
@@ -10,13 +11,27 @@ class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(alias='dodo_prefix')
+    async def change_prefix(self, context, prefix):
+        """Custom prefixes on a per-server basis in order to prevent command overlap"""
+        # TODO: Change prefix quantifier (right word?) to utilize RegEx for non-alphanumeric keyboard characters
+        if str(context.message.author.id) in admins:
+            if len(prefix) == 1:
+                with open('./files/prefixes.json', 'r') as file:
+                    prefixes = json.load(file)
+                prefixes[str(context.guild.id)] = prefix
+                with open('./files/prefixes.json', 'w') as file:
+                    json.dump(prefixes, file, indent=4)
+                await context.send(f'Prefix changed to: {prefix}')
+            else:
+                await context.send(f'Entry is not a valid prefix')
+
     @commands.command(pass_context=True)
     async def reload(self, context, module: str):
         """Reload the specified cog [off then on]"""
         if str(context.message.author.id) in admins:
             try:
-                self.bot.unload_extension(f'cogs.{module}')
-                self.bot.load_extension(f'cogs.{module}')
+                self.bot.reload_extension(f'cogs.{module}')
                 await context.send('Reloaded')
             except Exception as err:
                 print('{}: {}'.format(type(err).__name__, err))
@@ -31,7 +46,6 @@ class Admin(commands.Cog):
             try:
                 self.bot.load_extension(f'cogs.{module}')
                 await context.send('Reloaded')
-
             except Exception as err:
                 print('{}: {}'.format(type(err).__name__, err))
                 await context.send(err)
@@ -76,6 +90,12 @@ class Admin(commands.Cog):
             await context.message.author.send('', embed=helper)
         else:
             await context.send('Bot Admin Only')
+
+    @commands.command(hidden=True)
+    async def shutdown(self, context):
+        if str(context.message.author.id) in admins:
+            print('Shutting down...')
+            await self.bot.logout()
 
 
 def setup(bot):

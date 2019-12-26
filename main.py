@@ -46,41 +46,27 @@ async def on_message(context):
 
 @bot.event
 async def on_guild_join(guild):
+    # TODO: Create server join message
     # Custom prefixes on a per-server basis in order to prevent command overlap
     with open('./files/prefixes.json', 'r') as file:
         prefixes = json.load(file)
-    prefixes[str(guild.id)] = '.'
+    prefixes[str(guild.id)] = "."
     with open('./files/prefixes.json', 'w') as file:
         json.dump(prefixes, file, indent=4)
 
-    # TODO: Create server join message
-
 @bot.event
 async def on_guild_remove(guild):
-    # Removes the custom prefix from prefixes.json
+    # Removes the custom prefix from prefixes.json when bot is removed from a server
+    # TODO: Get this to work with extensions
     with open('./files/prefixes.json', 'r') as file:
         prefixes = json.load(file)
     prefixes.pop(str(guild.id))
     with open('./files/prefixes.json', 'w') as file:
         json.dump(prefixes, file, indent=4)
 
-@bot.command(alias='idm_prefix')
-async def change_prefix(context, prefix):
-    # Custom prefixes on a per-server basis in order to prevent command overlap
-    # TODO: Make this an admin only command
-    # TODO: Change prefix quantifier (right word?) to utilize RegEx for non-alphanumeric keyboard characters
-    if len(prefix) == 1:
-        with open('./files/prefixes.json', 'r') as file:
-            prefixes = json.load(file)
-        prefixes[str(context.guild.id)] = prefix
-        with open('./files/prefixes.json', 'w') as file:
-            json.dump(prefixes, file, indent=4)
-        await context.send(f'Prefix changed to: {prefix}')
-    else:
-        await context.send(f'Entry is not a valid prefix')
-
 
 def load_extensions():
+    # Loads all of the extensions. Note: check iDM if I branch out to multiple folders
     for filename in os.listdir('./cogs'):
         cog = filename[:-3]
         if filename.endswith('.py'):

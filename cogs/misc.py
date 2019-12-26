@@ -4,6 +4,7 @@ from random import choice, randint
 
 
 class Misc(commands.Cog):
+    """Miscellaneous commands that did not fit in anywhere else"""
     def __init__(self, bot):
         self.bot = bot
 
