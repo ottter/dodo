@@ -177,8 +177,8 @@ class Weather(commands.Cog):
                       aliases=['temp', 'w'],
                       pass_context=True)
     async def weather_api(self, context):
-        """weather [location] . . . . . Gives you the weather of [location]
-        Example(s): weather london; weather nyc"""
+        """See the current weather for a given location
+        How to view: .weather [city]"""
 
         message = context.message.content
         user_input = message.split(' ', 1)
@@ -269,8 +269,8 @@ class Weather(commands.Cog):
                       aliases=['fcast', 'f'],
                       pass_context=True)
     async def forecast_api(self, context):
-        """forecast [location] . . . . . Gives you the forecast of [location]
-        Example(s): forecast atlanta; forecast paris"""
+        """See the future forecast for a given location
+        How to view: .forecast [city]"""
 
         message = context.message.content
         user_input = message.split(' ', 1)
@@ -383,9 +383,10 @@ class Weather(commands.Cog):
                       aliases=['fpset', 'weatherset'],
                       pass_context=True)
     async def weather_settings(self, context):
-        """wset home [location] . . . . . . . . Sets your home location
-           wset unit [imperial/metric] . .  Sets your preferred unit.
-           wset [me/home] . . . . . . . . . . . . Tells you your saved settings"""
+        """Assign settings for .weather and .forecast
+        Set home location: .wset home [city]
+        Set preferred unit: .wset unit [c/f]
+        View saved settings: .wset [me/home]"""
         conn = sqlite3.connect('./files/user_data.db')
         c = conn.cursor()
 

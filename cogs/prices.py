@@ -6,7 +6,6 @@ import sqlite3
 import discord
 import config
 import json
-import yfinance as yf
 
 
 class Prices(commands.Cog):
@@ -15,7 +14,7 @@ class Prices(commands.Cog):
         self.bot = bot
 
     @commands.cooldown(1, 3, commands.BucketType.user)
-    @commands.command(name='stocks', aliases=['stonks'], pass_context=True)
+    @commands.command(name='stocks', aliases=['stonks', 'stock'], pass_context=True)
     async def stock(self, context):
         """Outputs current information on the Stock Market"""
         # TODO: Get important info to display

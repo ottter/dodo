@@ -42,6 +42,8 @@ class Misc(commands.Cog):
             print(err)
             await context.send('Format has to be in NdN! Example: 4d6')
 
+    # TODO: word-association-metagame https://wordassociations.net/en random response
+
 
 def setup(bot):
     bot.add_cog(Misc(bot))

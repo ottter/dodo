@@ -26,6 +26,7 @@ class People(commands.Cog):
     @commands.cooldown(1, 4, commands.BucketType.user)
     @commands.command()
     async def lights(self, context):
+        """Shows you the best of Lights473"""
         # TODO: Add an add_lights command
         # rename_folders(f'{imgdir}/lights/')
         path, dirs, files = next(os.walk(f'{imgdir}/lights'))
@@ -35,6 +36,7 @@ class People(commands.Cog):
     @commands.cooldown(1, 4, commands.BucketType.user)
     @commands.command()
     async def jebrim(self, context):
+        """Shows you the best of Jebrim"""
         # TODO: Add an add_jebrim command
         with open(f'{imgdir}/jebrim.csv') as f:
             reader = csv.reader(f)

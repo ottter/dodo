@@ -1,2 +1,2 @@
-# PolitiBot
-Political Shitposter for Discord
+# Dodo
+Chatbot for Discord
