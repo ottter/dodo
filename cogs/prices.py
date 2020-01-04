@@ -19,9 +19,6 @@ class Prices(commands.Cog):
         """Outputs current information on the Stock Market"""
         # TODO: Get important info to display
         # TODO: https://markets.money.cnn.com/services/api/chart/snapshot_chart_api.asp?symb=MSFT
-        stock = yf.Ticker("AAPL").info
-        for k, v in stock.items():
-            print(f'{k} \t\t {v}')
         await context.send('To be added')
 
     @commands.cooldown(1, 3, commands.BucketType.user)
