@@ -6,6 +6,8 @@ import sqlite3
 import config
 import json
 
+# I wrote this like 2 years ago. Don't judge me
+
 weather_description = """ ====  In-depth Weather Forecast Details  ====
                                 Trouble finding your city? Try here: https://www.openweathermap.org/city/"""
 
