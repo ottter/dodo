@@ -38,7 +38,7 @@ def time_converter(weather_api_time):
 
 
 def weather_url_builder(service_param, search_param, city_id, input_unit):
-    user_api_key = config.owm_token
+    user_api_key = config.OWM_TOKEN
     api_url = 'http://api.openweathermap.org/data/2.5/'  # 4207400
     weather_api_url = '{}{}{}{}&mode=json&units={}&APPID={}' \
         .format(api_url, service_param, search_param, city_id, input_unit, user_api_key)
@@ -191,6 +191,9 @@ class Weather(commands.Cog):
         temp_sign = 'C'
         user_city = 'fucking'  # haven't thought of a better way to implement backup defaults
 
+        collection = config.db['weather_home']
+        conditions = config.db['sky_condition']
+
         try:
             user_city = str(user_input[1])
 
@@ -200,26 +203,33 @@ class Weather(commands.Cog):
             c.execute('SELECT * FROM weather_home WHERE discord_id=?', [user])
 
             if user_city == 'home':
-                for row in c.fetchall():
-                    weather = weather_data(weather_fetch(weather_url_builder('weather?', 'id=', row[1], row[2])))
-                    c.execute('SELECT s.sky_text FROM sky_condition s INNER JOIN weather_home w '
-                              'WHERE s.sky_id=? AND w.discord_id=?', [weather['sky_id'], user])
-                    sky_deets = c.fetchone()
 
-                    data_url = base_url + str(row[1])
+                results = collection.find({'_id': user})
+                row = []
+                for result in results:
+                    row = [result['_id'], result['home_loc'], result['unit']]
 
-                    if row[2] == 'imperial':
-                        temp_sign = 'F'
-                        wind_sign = 'mph'
-                        wind_con = str(round(weather['wind'], 1))
-                    else:
-                        wind_con = str(round(weather['wind'] * 3.6, 1))
+                weather = weather_data(weather_fetch(weather_url_builder('weather?', 'id=', row[1], row[2])))
+
+                # sky_detail = conditions.find({'sky_id': f'{weather["sky_id"]}'})
+                # for condition in sky_detail:
+                #     condition = condition['sky_text']
+
+                data_url = base_url + str(row[1])
+
+                if row[2] == 'imperial':
+                    temp_sign = 'F'
+                    wind_sign = 'mph'
+                    wind_con = str(round(weather['wind'], 1))
+                else:
+                    wind_con = str(round(weather['wind'] * 3.6, 1))
 
             else:
                 weather = weather_data(weather_fetch(weather_url_builder('weather?', 'q=', user_city, 'metric')))
 
-                c.execute('SELECT sky_text FROM sky_condition WHERE sky_id=?', [weather['sky_id']])
-                sky_deets = c.fetchone()
+                # sky_detail = conditions.find({'sky_id': f'{weather["sky_id"]}'})
+                # for condition in sky_detail:
+                #     condition = condition['sky_text']
 
                 data_url = base_url + str(weather['id'])
                 wind_con = str(round(weather['wind'] * 3.6, 1))
@@ -233,11 +243,15 @@ class Weather(commands.Cog):
             data_icon = icon_url + str(weather['icon']) + '.png'
             print(weather)
 
+            sky_detail = conditions.find({'sky_id': f'{weather["sky_id"]}'})
+            for condition in sky_detail:
+                condition = condition['sky_text']
+
             weather_embed = discord.Embed(title='{}, {} - {} :flag_{}:'
                                           .format(weather['city'], weather['country'], weather['id'],
                                                   weather['country'].lower()),
-                                          url=data_url, description='Right now it is {}°{} {}'
-                                          .format(weather['temp'], temp_sign, sky_deets[0]), color=0x16e40c)
+                                          url=data_url, description='Right now it is {}°{} and {}'
+                                          .format(weather['temp'], temp_sign, condition), color=0x16e40c)
             weather_embed.set_thumbnail(url=f'{data_icon}')
             weather_embed.set_author(name='WeatherCog - Providing weather updates from OWM',
                                      url='https://github.com/ottter/discord-bot',
@@ -392,37 +406,18 @@ class Weather(commands.Cog):
         conn = sqlite3.connect('./files/user_data.db')
         c = conn.cursor()
 
+        collection = config.db['weather_home']
+
         user = context.message.author.id
         message = context.message.content
         args = message.split(" ", 2)
-        print(args)
 
         if args[1] == 'home':
             home_set = args[2]
+            weather = weather_data(weather_fetch(weather_url_builder('weather?', 'q=', home_set, 'metric')))
 
-            if home_set in range(1, 9999999):
-                weather = weather_data(weather_fetch(weather_url_builder('weather?', 'id=', home_set, 'metric')))
-                c.execute('INSERT OR IGNORE INTO weather_home (discord_id) VALUES(?)', (user,))
-                c.execute('UPDATE weather_home SET home_loc=? WHERE discord_id=?', (home_set, user))
-                for row in c.fetchall():
-                    if row[2] is None:
-                        unit = 'metric'
-                    else:
-                        unit = row[2]
-                    c.execute('UPDATE weather_home SET unit=? WHERE discord_id=?', (unit, user))
-
-            else:
-                weather = weather_data(weather_fetch(weather_url_builder('weather?', 'q=', home_set, 'metric')))
-                c.execute('INSERT OR IGNORE INTO weather_home (discord_id) VALUES(?)', (user,))
-                c.execute('UPDATE weather_home SET home_loc=? WHERE discord_id=?', (weather['id'], user))
-                for row in c.fetchall():
-                    if row[2] is None:
-                        unit = 'metric'
-                    else:
-                        unit = row[2]
-                    c.execute('UPDATE weather_home SET unit=? WHERE discord_id=?', (unit, user))
-
-            c.execute('UPDATE weather_home SET unit=? WHERE discord_id=?', ('metric', user))
+            collection.update_one({'_id': user}, {'$set': {'home_loc': weather['id'], 'unit': 'metric'}},
+                                  upsert=True)
 
             await context.send('```Success! You set your home location to: {}, {}\n'
                                   'Not what you\'re looking for? Try \'!help Weather\' or go here: {}```'
@@ -430,18 +425,14 @@ class Weather(commands.Cog):
 
         elif args[1] == 'unit':
             u = str(''.lower().join(args[2]))
-            if (u == 'metric') or (u == 'c') or (u == 'celsius') or (u == 'met'):
-                c.execute('INSERT OR IGNORE INTO weather_home (discord_id) VALUES(?)', (user,))
-                c.execute('UPDATE weather_home SET unit=? WHERE discord_id=?', ('metric', user))
-                await context.send('```Success! You set your preferred unit to: Metric```')
+            unit = {'c': 'metric', 'f': 'imperial'}
 
-            elif (u == 'imperial') or (u == 'f') or (u == 'fahrenheit') or (u == 'imp'):
-                c.execute('INSERT OR IGNORE INTO weather_home (discord_id) VALUES(?)', (user,))
-                c.execute('UPDATE weather_home SET unit=? WHERE discord_id=?', ('imperial', user))
-                await context.send('```Success! You set your preferred unit to: Imperial```')
+            if u in unit.keys():
+                collection.update_one({'_id': user}, {'$set': {'unit': unit[u]}}, upsert=True)
+                await context.send(f'Success! You set your preferred unit to: `{unit[u]}`')
 
             else:
-                await context.send('```Typo... I think. Try again.```')
+                await context.send('Accepted Inputs:`C` for Celsius or `F` for Fahrenheit')
 
         elif (args[1] == 'me') or (args[1] == 'settings'):
             c.execute('SELECT * FROM weather_home WHERE discord_id=?', [user])

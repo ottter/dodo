@@ -81,7 +81,7 @@ def log_in():
     load_extensions()
     print('Attempting to log in...')
     try:
-        bot.run(config.discord_token)
+        bot.run(config.DISCORD_TOKEN)
     except Exception as error:
         print('Discord: Unsuccessful login. Error: ', error)
         quit()
