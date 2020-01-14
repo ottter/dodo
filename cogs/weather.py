@@ -2,7 +2,6 @@ from discord.ext import commands
 import urllib.request
 import urllib.error
 import discord
-import sqlite3
 import config
 import json
 
@@ -187,20 +186,16 @@ class Weather(commands.Cog):
 
         icon_url = 'http://openweathermap.org/img/w/'
         wind_sign = 'km/h'
-        sky_deets = 'clear'  # sometimes the API doesn't have an entry and it makes code act weird
+        condition = 'clear'  # sometimes the API doesn't have an entry and it makes code act weird
         temp_sign = 'C'
-        user_city = 'fucking'  # haven't thought of a better way to implement backup defaults
+        user_city = 'atlanta'  # haven't thought of a better way to implement backup defaults
 
         collection = config.db['weather_home']
         conditions = config.db['sky_condition']
 
         try:
             user_city = str(user_input[1])
-
-            conn = sqlite3.connect('./files/user_data.db')
-            c = conn.cursor()
             user = context.message.author.id
-            c.execute('SELECT * FROM weather_home WHERE discord_id=?', [user])
 
             if user_city == 'home':
 
@@ -210,10 +205,6 @@ class Weather(commands.Cog):
                     row = [result['_id'], result['home_loc'], result['unit']]
 
                 weather = weather_data(weather_fetch(weather_url_builder('weather?', 'id=', row[1], row[2])))
-
-                # sky_detail = conditions.find({'sky_id': f'{weather["sky_id"]}'})
-                # for condition in sky_detail:
-                #     condition = condition['sky_text']
 
                 data_url = base_url + str(row[1])
 
@@ -227,13 +218,8 @@ class Weather(commands.Cog):
             else:
                 weather = weather_data(weather_fetch(weather_url_builder('weather?', 'q=', user_city, 'metric')))
 
-                # sky_detail = conditions.find({'sky_id': f'{weather["sky_id"]}'})
-                # for condition in sky_detail:
-                #     condition = condition['sky_text']
-
                 data_url = base_url + str(weather['id'])
                 wind_con = str(round(weather['wind'] * 3.6, 1))
-
 
             map_url = 'https://www.google.com/maps/@{},{},12z'.format(weather['latitude'], weather['longitude'])
 
@@ -247,24 +233,27 @@ class Weather(commands.Cog):
             for condition in sky_detail:
                 condition = condition['sky_text']
 
-            weather_embed = discord.Embed(title='{}, {} - {} :flag_{}:'
-                                          .format(weather['city'], weather['country'], weather['id'],
-                                                  weather['country'].lower()),
-                                          url=data_url, description='Right now it is {}°{} and {}'
-                                          .format(weather['temp'], temp_sign, condition), color=0x16e40c)
+            weather_embed = discord.Embed(title=f"{weather['city']}, {weather['country']} - "
+                                                f"{weather['id']} :flag_{weather['country'].lower()}:",
+                                          url=data_url,
+                                          description=f"Right now it is {weather['temp']}°{temp_sign} and {condition}",
+                                          color=0x16e40c)
             weather_embed.set_thumbnail(url=f'{data_icon}')
             weather_embed.set_author(name='WeatherCog - Providing weather updates from OWM',
                                      url='https://github.com/ottter/discord-bot',
                                      icon_url='https://puu.sh/AIA3L/af06b7ffbe.png')
-            weather_embed.add_field(name='Current Temp', value='{}°{}'.format(weather['temp'], temp_sign))
+            weather_embed.add_field(name='Current Temp',
+                                    value=f"{weather['temp']}°{temp_sign}")
             weather_embed.add_field(name='High & Low Temp',
-                                    value='{}° / {}°'.format(weather['temp_max'], weather['temp_min']))
-            weather_embed.add_field(name='Humidity', value='{}%'.format(weather['humidity']))
-            weather_embed.add_field(name='Wind', value='{} {} {} ({}°)'
-                                    .format(wind_con, wind_sign, weather['direction'], weather['wind_deg']))
+                                    value=f"{weather['temp_max']}° / {weather['temp_min']}°")
+            weather_embed.add_field(name='Humidity',
+                                    value=f"{weather['humidity']}%")
+            weather_embed.add_field(name='Wind',
+                                    value=f"{wind_con} {wind_sign} {weather['direction']} ({weather['wind_deg']}°)")
             weather_embed.add_field(name='Lat & Long',
-                                    value='[{}, {}]({})'.format(weather['latitude'], weather['longitude'], map_url))
-            weather_embed.add_field(name='Time Since Last Update', value='{}'.format(time_ago))
+                                    value=f"[{weather['latitude']}, {weather['longitude']}]({map_url})")
+            weather_embed.add_field(name='Time Since Last Update',
+                                    value=f'{time_ago}')
             weather_embed.set_footer(text=f'Wrong information? Try \'.help Weather\' or go to {base_url}')
             await context.send(embed=weather_embed)
 
@@ -292,39 +281,44 @@ class Weather(commands.Cog):
         user_input = message.split(' ', 1)
 
         icon_url = 'http://openweathermap.org/img/w/'
-        sky_deets = 'clear'
+        condition = 'clear'
         temp_sign = 'C'
-        user_city = 'fucking'  # haven't thought of a better way to implement backup defaults
+        user_city = 'atlanta'  # haven't thought of a better way to implement backup defaults
+
+        collection = config.db['weather_home']
+        conditions = config.db['sky_condition']
 
         try:
-            conn = sqlite3.connect('./files/user_data.db')
-            c = conn.cursor()
-            user = context.message.author.id
-            c.execute('SELECT * FROM weather_home WHERE discord_id=?', [user])
-
             user_city = str(user_input[1])
+            user = context.message.author.id
 
             if user_city == 'home':
-                for row in c.fetchall():
-                    weather = weather_data(weather_fetch(weather_url_builder('weather?', 'id=', row[1], row[2])))
-                    forecast = forecast_data(weather_fetch(weather_url_builder('forecast?', 'id=', row[1], row[2])))
-                    c.execute('SELECT s.sky_text FROM sky_condition s INNER JOIN weather_home w '
-                              'WHERE s.sky_id=? AND w.discord_id=?', [weather['sky_id'], user])
-                    sky_deets = c.fetchone()
-                    data_url = base_url + str(row[1])
+                results = collection.find({'_id': user})
+                row = []
+                for result in results:
+                    row = [result['_id'], result['home_loc'], result['unit']]
 
-                    if row[2] == 'imperial':
-                        temp_sign = 'F'
+                weather = weather_data(weather_fetch(weather_url_builder('weather?', 'id=', row[1], row[2])))
+                forecast = forecast_data(weather_fetch(weather_url_builder('forecast?', 'id=', row[1], row[2])))
 
+                data_url = base_url + str(row[1])
+
+                sky_detail = conditions.find({'sky_id': f'{weather["sky_id"]}'})
+                for condition in sky_detail:
+                    condition = condition['sky_text']
+
+                if row[2] == 'imperial':
+                    temp_sign = 'F'
 
             else:
                 forecast = forecast_data(weather_fetch(weather_url_builder('forecast?', 'q=', user_city, 'metric')))
                 weather = weather_data(weather_fetch(weather_url_builder('weather?', 'q=', user_city, 'metric')))
 
-                c.execute('SELECT sky_text FROM sky_condition WHERE sky_id=?', [weather['sky_id']])
-                sky_deets = c.fetchone()
-                data_url = base_url + str(weather['id'])
+                sky_detail = conditions.find({'sky_id': f'{weather["sky_id"]}'})
+                for condition in sky_detail:
+                    condition = condition['sky_text']
 
+                data_url = base_url + str(weather['id'])
 
             map_url = 'https://www.google.com/maps/@{},{},12z'.format(weather['latitude'], weather['longitude'])
             data_icon = icon_url + str(weather['icon']) + '.png'
@@ -367,7 +361,7 @@ class Weather(commands.Cog):
                                                    weather['country'].lower()),
                                            url=data_url, description='Right now it is {}°{} and {}.\n'
                                                                      'What you can expect to see:'
-                                           .format(weather['temp'], temp_sign, sky_deets[0]), color=0x16e40c)
+                                           .format(weather['temp'], temp_sign, condition), color=0x16e40c)
             forecast_embed.set_thumbnail(url=f'{data_icon}')
             forecast_embed.set_author(name='WeatherCog - Providing forecast updates from OWM',
                                       url='https://github.com/ottter/discord-bot',
@@ -396,59 +390,40 @@ class Weather(commands.Cog):
     @commands.command(name='wset',
                       description='Settings for WeatherBot. ".help Weather" for assistance',
                       brief='Set user\'s saved weather information',
-                      aliases=['fpset', 'weatherset'],
+                      aliases=['fset', 'weatherset'],
                       pass_context=True)
     async def weather_settings(self, context):
         """Assign settings for .weather and .forecast
         Set home location: .wset home [city]
         Set preferred unit: .wset unit [c/f]
         View saved settings: .wset [me/home]"""
-        conn = sqlite3.connect('./files/user_data.db')
-        c = conn.cursor()
 
         collection = config.db['weather_home']
 
         user = context.message.author.id
-        message = context.message.content
-        args = message.split(" ", 2)
+        args = context.message.content.lower().split(" ", 2)
 
         if args[1] == 'home':
-            home_set = args[2]
-            weather = weather_data(weather_fetch(weather_url_builder('weather?', 'q=', home_set, 'metric')))
+            weather = weather_data(weather_fetch(weather_url_builder('weather?', 'q=', args[2], 'metric')))
 
             collection.update_one({'_id': user}, {'$set': {'home_loc': weather['id'], 'unit': 'metric'}},
                                   upsert=True)
 
-            await context.send('```Success! You set your home location to: {}, {}\n'
-                                  'Not what you\'re looking for? Try \'!help Weather\' or go here: {}```'
-                                  .format(weather['city'], weather['country'], base_url))
+            await context.send(f"```Success! You set your home location to: {weather['city']}, {weather['country']}\n"
+                               "Not what you\'re looking for? Try \'!help Weather\' or go here: {base_url}```")
 
         elif args[1] == 'unit':
-            u = str(''.lower().join(args[2]))
             unit = {'c': 'metric', 'f': 'imperial'}
 
-            if u in unit.keys():
-                collection.update_one({'_id': user}, {'$set': {'unit': unit[u]}}, upsert=True)
-                await context.send(f'Success! You set your preferred unit to: `{unit[u]}`')
+            if args[2] in unit.keys():
+                collection.update_one({'_id': user}, {'$set': {'unit': unit[args[2]]}}, upsert=True)
+                await context.send(f"Success! You set your preferred unit to: `{unit[args[2]]}`")
 
             else:
                 await context.send('Accepted Inputs:`C` for Celsius or `F` for Fahrenheit')
 
-        elif (args[1] == 'me') or (args[1] == 'settings'):
-            c.execute('SELECT * FROM weather_home WHERE discord_id=?', [user])
-            for row in c.fetchall():
-                weather = weather_data(weather_fetch(weather_url_builder('weather?', 'id=', row[1], row[2])))
-                await context.send('``` Your home location is:  {}, {} - {}\n Your preferred unit is: {}```'
-                                      .format(weather['city'], weather['country'], row[1], row[2]))
-
         else:
-            await context.send('``` Acceptable Formats: .wset home [city name/city id] \n '
-                                  '                    .wset unit [f/c/imperial/metric/fahrenheit/celsius```')
-
-        conn.commit()
-        c.close()
-        conn.close()
-
+            await context.send('Accepted Inputs: `.wset home [city name/city id]` and `.wset unit [F/C]`')
 
 def setup(bot):
     bot.add_cog(Weather(bot))
