@@ -13,19 +13,3 @@ OWM_TOKEN = 'a78bb1e133402c11c12db16f93a211dc'
 
 MONGO_TOKEN = MongoClient("mongodb+srv://james:4nOrxGKx2CSvjoBX@cluster0-wm7ma.mongodb.net/test?retryWrites=true&w=majority")
 db = MONGO_TOKEN.get_database('discord')
-
-# document = {'_id': 1, 'home_loc': '4207400', 'unit': 'metric'}
-# collection.insert_one(document)
-
-# document = {'discord_id': 1}
-# collection.create_index([{"discord_id": '1'}],unique=True)
-# collection.update({'discord_id': 1},
-#                   {"$set":{'home_loc': '4207400', 'unit': 'metric'}})
-
-# results = collection.find({'discord_id': 0})
-# for result in results:
-#     print(result['unit'])
-
-# results = collection.delete_one({'discord_id': 0})
-
-# results = collection.update_one({'discord_id': 0}, {'$set':{'unit':'imperial'}})

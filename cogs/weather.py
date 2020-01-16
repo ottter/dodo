@@ -13,25 +13,6 @@ weather_description = """ ====  In-depth Weather Forecast Details  ====
 base_url = 'https://www.openweathermap.org/city/'
 
 
-def error_handler(user_city):
-    error_embed = discord.Embed(title="Open Weather Map",
-                                url='{}{}'.format(base_url, user_city),
-                                color=0xff1717)
-    error_embed.set_author(name='WeatherCog - Providing weather updates from OWM',
-                           url='https://github.com/ottter/discord-bot',
-                           icon_url='https://puu.sh/AIA3L/af06b7ffbe.png')
-    error_embed.add_field(name="Non-existent location, or unable to find",
-                          value="The link above will take you to what you tried searching for. ")
-    index_error = error_embed.add_field(name="Missing search parameter",
-                                        value="Try searching for a city: '.w london' or '.f atlanta'")
-    error_embed.add_field(name="If you don't have a saved home:",
-                          value="'.wset home [desired location]' to save your home",
-                          inline=False)
-    error_embed.set_footer(text="Try entering '.help Weather' for further assistance.")
-
-    return error_embed
-
-
 def time_converter(weather_api_time):
     return config.datetime.datetime.fromtimestamp(int(weather_api_time)).strftime('%I:%M %p')
 
@@ -259,13 +240,13 @@ class Weather(commands.Cog):
 
         except urllib.error.HTTPError as err:
             print(err)
-            await context.send(embed=error_handler(user_city))
+            await context.send('')
         except IndexError as err:
             print(err)
-            await context.send(embed=error_handler(user_city))
-        except (TypeError, KeyError, Exception) as err:
+            await context.send('')
+        except Exception as err:
             print(err)
-            await context.send(embed=error_handler(user_city))
+            await context.send('')
 
     @commands.cooldown(1, 3, commands.BucketType.user)  # _ use per _ seconds per user/channel/server #
     @commands.command(name='forecast',
@@ -378,13 +359,13 @@ class Weather(commands.Cog):
             await context.send(embed=forecast_embed)
 
         except urllib.error.HTTPError as err:
-            await context.send(embed=error_handler(user_city))
+            await context.send('')
 
         except IndexError as err:
-            await context.send(embed=error_handler(user_city))
+            await context.send('')
 
-        except (TypeError, KeyError, Exception) as err:
-            await context.send(embed=error_handler(user_city))
+        except Exception as err:
+            await context.send('')
 
     @commands.cooldown(1, 1, commands.BucketType.user)  # _ use per _ seconds per user/channel/server #
     @commands.command(name='wset',
@@ -410,7 +391,9 @@ class Weather(commands.Cog):
                                   upsert=True)
 
             await context.send(f"```Success! You set your home location to: {weather['city']}, {weather['country']}\n"
-                               "Not what you\'re looking for? Try \'!help Weather\' or go here: {base_url}```")
+                               "Not what you're looking for? Try \'!help Weather\' or go here: {base_url}```")
+            await context.send(f"Success! You set your preferred unit to: `{weather['city']}, {weather['country']}`\n"
+                               f"Not what you're looking for? Try \'!help Weather\' or go here: {base_url}")
 
         elif args[1] == 'unit':
             unit = {'c': 'metric', 'f': 'imperial'}
