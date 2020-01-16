@@ -11,7 +11,8 @@ discord_game_played = 'Runescape'
 
 OWM_TOKEN = 'a78bb1e133402c11c12db16f93a211dc'
 
-MONGO_TOKEN = MongoClient("mongodb+srv://james:4nOrxGKx2CSvjoBX@cluster0-wm7ma.mongodb.net/test?retryWrites=true&w=majority")
+# MONGO_TOKEN = MongoClient("mongodb+srv://james:4nOrxGKx2CSvjoBX@cluster0-wm7ma.mongodb.net/test?retryWrites=true&w=majority")
+MONGO_TOKEN = MongoClient(process.env.MONGODB_URI)
 db = MONGO_TOKEN['discord']
 
 # document = {'_id': 1, 'home_loc': '4207400', 'unit': 'metric'}
