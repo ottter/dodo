@@ -1,8 +1,6 @@
 from discord.ext import commands
 from urllib.request import urlopen
-import urllib.request
 import urllib.error
-import sqlite3
 import discord
 import config
 import json
@@ -25,28 +23,29 @@ class Prices(commands.Cog):
     @commands.command(name='crypto', pass_context=True)
     async def crypto(self, context):
         """Outputs current information on Cryptocurrency"""
-        conn = sqlite3.connect('./files/user_data.db')
-        c = conn.cursor()
 
         base_url = 'https://coinmarketcap.com/currencies/'
         graph_url = 'https://s2.coinmarketcap.com/generated/sparklines/web/7d/usd/'
         thumb_url = 'https://chainz.cryptoid.info/logo/'
-        alt_url = 'https://coinmarketcap.com/coins/'
+        # alt_url = 'https://coinmarketcap.com/coins/'
 
-        message = context.message.content.upper()
-        args = message.split(" ")
+        args = context.message.content.upper().split(" ")
         coin_name_url = '-'.join(args[1:3])
 
-        try:
-            c.execute('SELECT * FROM crypto_info WHERE coin_symbol=? LIMIT 1', [coin_name_url])
-            row = c.fetchone()
+        collection = config.db['cryptocurrency']
 
-            if row is None:         # if arg is coin full name
+        try:
+            results = collection.find({'coin_symbol': coin_name_url})
+            row = []
+            for result in results:
+                row = [result['coin_name'], result['coin_symbol']]
+
+            if not row:         # if arg = coin full name
                 pass
-            else:                   # if arg = coin symbol
+            else:               # if arg = coin symbol
                 coin_name_url = row[0]
 
-            with urlopen("https://api.coinmarketcap.com/v1/ticker/{0}/".format(coin_name_url)) as coin_api:
+            with urlopen(f"https://api.coinmarketcap.com/v1/ticker/{coin_name_url}/") as coin_api:
                 source = coin_api.read()
             coin_api = json.loads(source[1:-1])
 
@@ -65,38 +64,34 @@ class Prices(commands.Cog):
             if price_usd > 5:
                 price_usd = round(price_usd, 2)
 
-            graph_emoji_1h, graph_emoji_24h, graph_emoji_7d = '📉', '📉', '📉'
-            if percent_change_1h > 0:   # Life is just nested if statements
-                graph_emoji_1h = '📈'
-            if percent_change_24h > 0:
-                graph_emoji_24h = '📈'
-            if percent_change_7d > 0:
-                graph_emoji_7d = '📈'
+            graph_emoji = []
+            for x in [percent_change_1h, percent_change_24h, percent_change_7d]:
+                if x >= 0:
+                    graph_emoji.append('📈')
+                else:
+                    graph_emoji.append('📉')
 
             seconds_ago = int(config.time.time()) - last_updated
             time_since_update = config.datetime.timedelta(seconds=seconds_ago)
 
-            crypto_embed = discord.Embed(title='{} - {}'.format(coin_name, coin_symbol),
-                                         url=base_url+coin_id, color=0x16e40c)
+            crypto_embed = discord.Embed(title=f'{coin_name} - {coin_symbol}', url=base_url+coin_id, color=0x16e40c)
             crypto_embed.set_author(name='Crypto Tracker')
-            crypto_embed.add_field(name='Current Price (in USD)', value='${}'.format(price_usd))
+            crypto_embed.add_field(name='Current Price (in USD)', value=f'${price_usd}')
             crypto_embed.add_field(name='\u200b', value='\u200b')
-            crypto_embed.add_field(name='Last Updated', value='{}'.format(time_since_update))
-            crypto_embed.add_field(name='Last 1 Hour', value='{}% {}'.format(percent_change_1h, graph_emoji_1h))
-            crypto_embed.add_field(name='Last 24 Hours', value='{}% {}'.format(percent_change_24h, graph_emoji_24h))
-            crypto_embed.add_field(name='Last 7 Days', value='{}% {}'.format(percent_change_7d, graph_emoji_7d))
+            crypto_embed.add_field(name='Last Updated', value=f'{time_since_update}')
+            crypto_embed.add_field(name='Last 1 Hour', value=f'{percent_change_1h}% {graph_emoji[0]}')
+            crypto_embed.add_field(name='Last 24 Hours', value=f'{percent_change_24h}% {graph_emoji[1]}')
+            crypto_embed.add_field(name='Last 7 Days', value=f'{percent_change_7d}% {graph_emoji[2]}')
             crypto_embed.set_image(url=graph_url + coin_rank + '.png')
             crypto_embed.set_thumbnail(url=thumb_url + coin_symbol + '.png')
-            crypto_embed.set_footer(text='Wrong information? Try \'!help crypto\' or go to {}'.format(base_url))
+            crypto_embed.set_footer(text=f"Wrong information? Try '!help crypto' or go to {base_url}")
             await context.send(embed=crypto_embed)
 
-        except urllib.error.HTTPError as err:
-            await context.send('400 or 404')
+        except urllib.error.HTTPError:
+            await context.send('400 or 404 Error')
         except Exception as err:
+            print(f'crypto: Error: {err}\t Input: {args}')
             await context.send('Unknown error')
-        c.close()
-        conn.close()
-
 
 def setup(bot):
     bot.add_cog(Prices(bot))
