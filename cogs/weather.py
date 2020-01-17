@@ -33,6 +33,16 @@ def weather_fetch(full_api_url):
 
 
 def forecast_data(raw_api_dict):
+    # temp_max06 = -60
+    # for x in range(0,3):
+    #     max_num = raw_api_dict['list'][x]['main']['temp_max']
+    #     if max_num > temp_max06: temp_max06 = max_num
+    #
+    # temp_min06 = 150
+    # for x in range(0,3):
+    #     min_num = raw_api_dict['list'][x]['main']['temp_min']
+    #     if min_num < temp_min06: temp_min06 = min_num
+
     forecast = dict(
         id=raw_api_dict.get('city').get('id'),
         city=raw_api_dict.get('city').get('name'),
@@ -53,13 +63,13 @@ def forecast_data(raw_api_dict):
         h75_sky=raw_api_dict['list'][24]['weather'][0]['main'], h78_sky=raw_api_dict['list'][25]['weather'][0]['main'],
 
         h3_max=int(raw_api_dict['list'][0]['main']['temp_max']),
-        h3_min=int(raw_api_dict['list'][0]['main']['temp_min']),
         h6_max=int(raw_api_dict['list'][1]['main']['temp_max']),
-        h6_min=int(raw_api_dict['list'][1]['main']['temp_min']),
         h9_max=int(raw_api_dict['list'][2]['main']['temp_max']),
+
+        h3_min=int(raw_api_dict['list'][0]['main']['temp_min']),
+        h6_min=int(raw_api_dict['list'][1]['main']['temp_min']),
         h9_min=int(raw_api_dict['list'][2]['main']['temp_min']),
-        h12_max=int(raw_api_dict['list'][3]['main']['temp_max']),
-        h12_min=int(raw_api_dict['list'][3]['main']['temp_min']),
+
         h15_max=int(raw_api_dict['list'][4]['main']['temp_max']),
         h15_min=int(raw_api_dict['list'][4]['main']['temp_min']),
         h18_max=int(raw_api_dict['list'][5]['main']['temp_max']),
@@ -122,28 +132,14 @@ def weather_data(raw_api_dict):
         sky_detail='Undefined'
     )
 
-    if int(weather['wind_deg']) in range(337, 361):
-        weather['direction'] = 'North'
-    elif int(weather['wind_deg']) in range(0, 22):
-        weather['direction'] = 'North'
-    elif int(weather['wind_deg']) in range(22, 67):
-        weather['direction'] = 'NE'
-    elif int(weather['wind_deg']) in range(67, 112):
-        weather['direction'] = 'East'
-    elif int(weather['wind_deg']) in range(112, 157):
-        weather['direction'] = 'SE'
-    elif int(weather['wind_deg']) in range(157, 202):
-        weather['direction'] = 'South'
-    elif int(weather['wind_deg']) in range(202, 247):
-        weather['direction'] = 'SW'
-    elif int(weather['wind_deg']) in range(247, 292):
-        weather['direction'] = 'West'
-    elif int(weather['wind_deg']) in range(292, 337):
-        weather['direction'] = 'NW'
-    elif int(weather['wind_deg']) in range(292, 337):
-        weather['direction'] = 'NW'
-    elif int(weather['wind_deg']) == -1:
-        weather['direction'] = '\u200b'
+    wind_direction = {range(337, 361): 'N', range(0, 22): 'N', range(22, 67): 'NE', range(67, 112): 'E',
+                      range(112, 157): 'SE', range(157, 202): 'S', range(202, 247): 'SW', range(247, 292): 'W',
+                      range(292, 337): 'NW', range(-1,0): '\u200b'}
+
+    for k in wind_direction:
+        if weather['wind_deg'] in k:
+            weather['direction'] = wind_direction[k]
+
     return weather
 
 
@@ -230,10 +226,10 @@ class Weather(commands.Cog):
             weather_embed.add_field(name='Humidity',
                                     value=f"{weather['humidity']}%")
             weather_embed.add_field(name='Wind',
-                                    value=f"{wind_con} {wind_sign} {weather['direction']} ({weather['wind_deg']}°)")
+                                    value=f"{weather['direction']} {wind_con}{wind_sign}")
             weather_embed.add_field(name='Lat & Long',
                                     value=f"[{weather['latitude']}, {weather['longitude']}]({map_url})")
-            weather_embed.add_field(name='Time Since Last Update',
+            weather_embed.add_field(name='Last Updated',
                                     value=f'{time_ago}')
             weather_embed.set_footer(text=f'Wrong information? Try \'.help Weather\' or go to {base_url}')
             await context.send(embed=weather_embed)

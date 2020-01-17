@@ -3,7 +3,7 @@ import random
 import config
 from discord.ext import commands
 
-img_dir = './images'
+IMG_DIR = './images'    # Used in .csv method
 
 def add_image(context, person):
     """ Tests the URL and adds to specific collection csv"""
@@ -17,7 +17,7 @@ def add_image(context, person):
     return context.send(f'Added to the `{person}` collection')
 
     # # To use with .csv storage instead of in a database
-    # with open(f'{img_dir}/{person}.csv', 'r') as f:  # Tests for duplicate URLs
+    # with open(f'{IMG_DIR}/{person}.csv', 'r') as f:  # Tests for duplicate URLs
     #     reader = csv.reader(f)
     #     for r in reader:
     #         if args[1] == r[0]:
