@@ -1,9 +1,9 @@
 import re
-import csv
 import random
+import config
 from discord.ext import commands
 
-imgdir = './images'
+img_dir = './images'
 
 def add_image(context, person):
     """ Tests the URL and adds to specific collection csv"""
@@ -12,22 +12,31 @@ def add_image(context, person):
     if not re.match('https?://i\.imgur\.com/[A-z0-9]+\.(png|jpg)/?', args[1]):  # Tests for imgur image URL
         return context.send('Direct Imgur links only.')
 
-    with open(f'{imgdir}/{person}.csv', 'r') as f:  # Tests for duplicate URLs
-        reader = csv.reader(f)
-        for r in reader:
-            if args[1] == r[0]:
-                return context.send(f'That image is already in: `{person}.csv`')
+    collection = config.db['people']
+    collection.update_one({'image_url': args[1]}, {'$set': {'person': person}}, upsert=True)    # Prevents duplicates
+    return context.send(f'Added to the `{person}` collection')
 
-    with open(f'{imgdir}/{person}.csv', 'a') as f:  # Adds entry to the .csv if it passes RegEx & duplicate
-        f.write(f'\n{args[1]}')
-        return context.send(f'Added to the `{person}` collection')
+    # # To use with .csv storage instead of in a database
+    # with open(f'{img_dir}/{person}.csv', 'r') as f:  # Tests for duplicate URLs
+    #     reader = csv.reader(f)
+    #     for r in reader:
+    #         if args[1] == r[0]:
+    #             return context.send(f'That image is already in: `{person}.csv`')
+    #
+    # with open(f'{img_dir}/{person}.csv', 'a') as f:  # Adds entry to the .csv if it passes RegEx & duplicate
+    #     f.write(f'\n{args[1]}')
+    #     return context.send(f'Added to the `{person}` collection')
+
 
 def random_image(context, person):
     """ Returns a random Imgur URL from the selected file"""
-    with open(f'{imgdir}/{person}.csv') as f:
-        reader = csv.reader(f)
-        chosen_row = random.choice(list(reader))
-        return context.channel.send(chosen_row[0])
+    collection = config.db['people']
+    images = collection.find({'person': person})
+    row = []
+    for image in images:
+        row = [image['image_url']]
+    rand_img = random.choice(list(row))
+    return context.channel.send(rand_img)
 
 
 class People(commands.Cog):
@@ -49,14 +58,14 @@ class People(commands.Cog):
 
         await random_image(context, 'jebrim')
 
-    @commands.cooldown(1, 30, commands.BucketType.user)
+    @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command()
     async def add_lights(self, context):
         """Add to the Lights collection"""
 
         await add_image(context, 'lights')
 
-    @commands.cooldown(1, 30, commands.BucketType.user)
+    @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command()
     async def add_jebrim(self, context):
         """Add to the Jebrim collection"""
