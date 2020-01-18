@@ -34,7 +34,7 @@ def random_image(context, person):
     images = collection.find({'person': person})
     row = []
     for image in images:
-        row = [image['image_url']]
+        row.append(image['image_url'])
     rand_img = random.choice(list(row))
     return context.channel.send(rand_img)
 
