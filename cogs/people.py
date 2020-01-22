@@ -51,19 +51,19 @@ class People(commands.Cog):
 
         await random_image(context, 'lights')
 
-    @commands.cooldown(1, 4, commands.BucketType.user)
-    @commands.command()
-    async def jebrim(self, context):
-        """Shows you the best of Jebrim"""
-
-        await random_image(context, 'jebrim')
-
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command()
     async def add_lights(self, context):
         """Add to the Lights collection"""
 
         await add_image(context, 'lights')
+
+    @commands.cooldown(1, 4, commands.BucketType.user)
+    @commands.command()
+    async def jebrim(self, context):
+        """Shows you the best of Jebrim"""
+
+        await random_image(context, 'jebrim')
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command()
@@ -85,6 +85,20 @@ class People(commands.Cog):
         """Add to the Marianna collection"""
 
         await add_image(context, 'mars')
+
+    @commands.cooldown(1, 4, commands.BucketType.user)
+    @commands.command()
+    async def pgt(self, context):
+        """Shows you the best of Pgt"""
+
+        await random_image(context, 'pgt')
+
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.command()
+    async def add_pgt(self, context):
+        """Add to the Pgt collection"""
+
+        await add_image(context, 'pgt')
 
 def setup(bot):
     bot.add_cog(People(bot))
