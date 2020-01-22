@@ -171,7 +171,7 @@ class Weather(commands.Cog):
         conditions = config.db['sky_condition']
 
         try:
-            user_city = str(user_input[1])
+            user_city = str(user_input[1].replace(' ', '%20'))
             user = context.message.author.id
 
             if user_city == 'home':
@@ -204,7 +204,6 @@ class Weather(commands.Cog):
             time_ago = config.datetime.timedelta(seconds=seconds_ago)
 
             data_icon = icon_url + str(weather['icon']) + '.png'
-            print(weather)
 
             sky_detail = conditions.find({'sky_id': f'{weather["sky_id"]}'})
             for condition in sky_detail:
@@ -266,7 +265,7 @@ class Weather(commands.Cog):
         conditions = config.db['sky_condition']
 
         try:
-            user_city = str(user_input[1])
+            user_city = str(user_input[1].replace(' ', '%20'))
             user = context.message.author.id
 
             if user_city == 'home':
@@ -277,7 +276,6 @@ class Weather(commands.Cog):
 
                 weather = weather_data(weather_fetch(weather_url_builder('weather?', 'id=', row[1], row[2])))
                 forecast = forecast_data(weather_fetch(weather_url_builder('forecast?', 'id=', row[1], row[2])))
-
                 data_url = base_url + str(row[1])
 
                 sky_detail = conditions.find({'sky_id': f'{weather["sky_id"]}'})
@@ -386,8 +384,6 @@ class Weather(commands.Cog):
             collection.update_one({'_id': user}, {'$set': {'home_loc': weather['id'], 'unit': 'metric'}},
                                   upsert=True)
 
-            await context.send(f"```Success! You set your home location to: {weather['city']}, {weather['country']}\n"
-                               "Not what you're looking for? Try \'!help Weather\' or go here: {base_url}```")
             await context.send(f"Success! You set your preferred unit to: `{weather['city']}, {weather['country']}`\n"
                                f"Not what you're looking for? Try \'!help Weather\' or go here: {base_url}")
 
