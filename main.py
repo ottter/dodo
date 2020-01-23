@@ -39,8 +39,6 @@ async def on_message(context):
     if context.author == bot.user:
         return
 
-    if message.find('president trump') != -1:
-        await context.channel.send('President Trump, the Impeached*')
     if message.find('!co2') != -1:
         await context.channel.send('Also CO2 is good for plants, meaning more CO2 means more life-sustaining oxygen '
                                    'and thus increase in agriculture as plants grow faster, more food, etc.')

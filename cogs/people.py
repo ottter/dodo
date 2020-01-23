@@ -44,7 +44,22 @@ class People(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.cooldown(1, 4, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.command()
+    async def people(self, context):
+        """Stat count on People database"""
+        collection = config.db['people']
+        person_count = []
+        count_dict = {}
+        for person in collection.find({}, {'_id': 0, 'person': 1}):
+            person_count.append(person['person'])
+        for person in list(set(person_count)):
+            count_dict[person] = person_count.count(person)
+        person_print = ['{0}:  {1}\n'.format(k.capitalize(), v) for k, v in sorted(count_dict.items())]
+        await context.send('Current Image Totals\n')
+        await context.send(''.join(person_print))
+
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command()
     async def lights(self, context):
         """Shows you the best of Lights473"""
@@ -58,7 +73,7 @@ class People(commands.Cog):
 
         await add_image(context, 'lights')
 
-    @commands.cooldown(1, 4, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command()
     async def jebrim(self, context):
         """Shows you the best of Jebrim"""
@@ -72,7 +87,7 @@ class People(commands.Cog):
 
         await add_image(context, 'jebrim')
         
-    @commands.cooldown(1, 4, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command()
     async def mars(self, context):
         """Shows you the best of Marianna"""
@@ -86,7 +101,7 @@ class People(commands.Cog):
 
         await add_image(context, 'mars')
 
-    @commands.cooldown(1, 4, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command()
     async def pgt(self, context):
         """Shows you the best of Pgt"""
