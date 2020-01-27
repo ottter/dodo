@@ -55,8 +55,8 @@ class People(commands.Cog):
             person_count.append(person['person'])
         for person in list(set(person_count)):
             count_dict[person] = person_count.count(person)
-        person_print = ['{0}:  {1}\n'.format(k.capitalize(), v) for k, v in sorted(count_dict.items())]
-        await context.send('Current Image Totals\n')
+        person_print = ['`{0}: {1}`\t'.format(k.capitalize(), v) for k, v in sorted(count_dict.items())]
+        await context.send('Current Image Totals:\n')
         await context.send(''.join(person_print))
 
     @commands.cooldown(1, 3, commands.BucketType.user)

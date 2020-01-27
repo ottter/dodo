@@ -33,15 +33,13 @@ def weather_fetch(full_api_url):
 
 
 def forecast_data(raw_api_dict):
-    # temp_max06 = -60
-    # for x in range(0,3):
-    #     max_num = raw_api_dict['list'][x]['main']['temp_max']
-    #     if max_num > temp_max06: temp_max06 = max_num
-    #
-    # temp_min06 = 150
-    # for x in range(0,3):
-    #     min_num = raw_api_dict['list'][x]['main']['temp_min']
-    #     if min_num < temp_min06: temp_min06 = min_num
+    # OWM API creates the forecast in 3 hour intervals, so [0]= 3 hours from present, [1]= 6 hours, up to 78 hours
+    # Each of the following lists works like this for their respective value
+    hourly_sky, hourly_max, hourly_min = ([] for i in range(3))
+    for x in range(26):
+        hourly_sky.append(raw_api_dict['list'][x]['weather'][0]['main'])
+        hourly_min.append(raw_api_dict['list'][x]['main']['temp_min'])
+        hourly_max.append(raw_api_dict['list'][x]['main']['temp_max'])
 
     forecast = dict(
         id=raw_api_dict.get('city').get('id'),
@@ -49,59 +47,9 @@ def forecast_data(raw_api_dict):
         country=raw_api_dict.get('city').get('country'),
         population=raw_api_dict.get('city').get('population'),
 
-        # Due to nature of calls, they won't be exactly 3 hours away
-        # Times (GMT): 12am (midnight), 3am, 6am, 9am, 12pm (noon), 3pm, 6pm, 9pm, 12am (midnight)
-        h3_sky=raw_api_dict['list'][0]['weather'][0]['main'], h6_sky=raw_api_dict['list'][1]['weather'][0]['main'],
-        h9_sky=raw_api_dict['list'][2]['weather'][0]['main'], h12_sky=raw_api_dict['list'][3]['weather'][0]['main'],
-        h15_sky=raw_api_dict['list'][4]['weather'][0]['main'], h18_sky=raw_api_dict['list'][5]['weather'][0]['main'],
-        h21_sky=raw_api_dict['list'][6]['weather'][0]['main'], h24_sky=raw_api_dict['list'][7]['weather'][0]['main'],
-        h27_sky=raw_api_dict['list'][8]['weather'][0]['main'], h39_sky=raw_api_dict['list'][12]['weather'][0]['main'],
-        h42_sky=raw_api_dict['list'][13]['weather'][0]['main'], h45_sky=raw_api_dict['list'][14]['weather'][0]['main'],
-        h48_sky=raw_api_dict['list'][15]['weather'][0]['main'], h51_sky=raw_api_dict['list'][16]['weather'][0]['main'],
-        h54_sky=raw_api_dict['list'][17]['weather'][0]['main'], h66_sky=raw_api_dict['list'][21]['weather'][0]['main'],
-        h69_sky=raw_api_dict['list'][22]['weather'][0]['main'], h72_sky=raw_api_dict['list'][23]['weather'][0]['main'],
-        h75_sky=raw_api_dict['list'][24]['weather'][0]['main'], h78_sky=raw_api_dict['list'][25]['weather'][0]['main'],
-
-        h3_max=int(raw_api_dict['list'][0]['main']['temp_max']),
-        h6_max=int(raw_api_dict['list'][1]['main']['temp_max']),
-        h9_max=int(raw_api_dict['list'][2]['main']['temp_max']),
-
-        h3_min=int(raw_api_dict['list'][0]['main']['temp_min']),
-        h6_min=int(raw_api_dict['list'][1]['main']['temp_min']),
-        h9_min=int(raw_api_dict['list'][2]['main']['temp_min']),
-
-        h15_max=int(raw_api_dict['list'][4]['main']['temp_max']),
-        h15_min=int(raw_api_dict['list'][4]['main']['temp_min']),
-        h18_max=int(raw_api_dict['list'][5]['main']['temp_max']),
-        h18_min=int(raw_api_dict['list'][5]['main']['temp_min']),
-        h21_max=int(raw_api_dict['list'][6]['main']['temp_max']),
-        h21_min=int(raw_api_dict['list'][6]['main']['temp_min']),
-        h24_max=int(raw_api_dict['list'][7]['main']['temp_max']),
-        h24_min=int(raw_api_dict['list'][7]['main']['temp_min']),
-        h27_max=int(raw_api_dict['list'][8]['main']['temp_max']),
-        h27_min=int(raw_api_dict['list'][8]['main']['temp_min']),
-
-        h42_max=int(raw_api_dict['list'][13]['main']['temp_max']),
-        h42_min=int(raw_api_dict['list'][13]['main']['temp_min']),
-        h45_max=int(raw_api_dict['list'][14]['main']['temp_max']),
-        h45_min=int(raw_api_dict['list'][14]['main']['temp_min']),
-        h48_max=int(raw_api_dict['list'][15]['main']['temp_max']),
-        h48_min=int(raw_api_dict['list'][15]['main']['temp_min']),
-        h51_max=int(raw_api_dict['list'][16]['main']['temp_max']),
-        h51_min=int(raw_api_dict['list'][16]['main']['temp_min']),
-        h54_max=int(raw_api_dict['list'][17]['main']['temp_max']),
-        h54_min=int(raw_api_dict['list'][17]['main']['temp_min']),
-
-        h66_max=int(raw_api_dict['list'][21]['main']['temp_max']),
-        h66_min=int(raw_api_dict['list'][21]['main']['temp_min']),
-        h69_max=int(raw_api_dict['list'][22]['main']['temp_max']),
-        h69_min=int(raw_api_dict['list'][22]['main']['temp_min']),
-        h72_max=int(raw_api_dict['list'][23]['main']['temp_max']),
-        h72_min=int(raw_api_dict['list'][23]['main']['temp_min']),
-        h75_max=int(raw_api_dict['list'][24]['main']['temp_max']),
-        h75_min=int(raw_api_dict['list'][24]['main']['temp_min']),
-        h78_max=int(raw_api_dict['list'][25]['main']['temp_max']),
-        h78_min=int(raw_api_dict['list'][25]['main']['temp_min']),
+        sky_hourly = hourly_sky,
+        temp_max = hourly_max,
+        temp_min = hourly_min,
     )
     return forecast
 
@@ -298,36 +246,31 @@ class Weather(commands.Cog):
             map_url = 'https://www.google.com/maps/@{},{},12z'.format(weather['latitude'], weather['longitude'])
             data_icon = icon_url + str(weather['icon']) + '.png'
 
-            temp_max_6 = max(weather['temp_max'], forecast['h3_max'],
-                             forecast['h6_max'], forecast['h9_max'])
-            temp_min_6 = min(weather['temp_min'], forecast['h3_min'],
-                             forecast['h6_min'], forecast['h9_min'])
-            temp_max_24 = max(forecast['h15_max'], forecast['h18_max'], forecast['h21_max'],
-                              forecast['h24_max'], forecast['h27_max'])
-            temp_min_24 = min(forecast['h15_min'], forecast['h18_min'], forecast['h21_min'],
-                              forecast['h24_min'], forecast['h27_min'])
-            temp_max_48 = max(forecast['h42_max'], forecast['h45_max'], forecast['h48_max'],
-                              forecast['h51_max'], forecast['h54_max'])
-            temp_min_48 = min(forecast['h42_min'], forecast['h45_min'], forecast['h48_min'],
-                              forecast['h51_min'], forecast['h54_min'])
-            temp_max_72 = max(forecast['h66_max'], forecast['h69_max'], forecast['h72_max'],
-                              forecast['h75_max'], forecast['h78_max'])
-            temp_min_72 = min(forecast['h66_min'], forecast['h69_min'], forecast['h72_min'],
-                              forecast['h75_min'], forecast['h78_min'])
+            temp_max_6 = int(max(forecast['temp_max'][0:3]))
+            temp_min_6 = int(min(forecast['temp_min'][0:3]))
 
-            sky_6_string = (weather['sky'], forecast['h3_sky'], forecast['h6_sky'], forecast['h9_sky'])
+            temp_max_24 = int(max(forecast['temp_max'][4:9]))
+            temp_min_24 = int(min(forecast['temp_min'][4:9]))
+
+            temp_max_48 = int(max(forecast['temp_max'][13:18]))
+            temp_min_48 = int(min(forecast['temp_min'][13:18]))
+
+            temp_max_72 = int(max(forecast['temp_max'][21:26]))
+            temp_min_72 = int(min(forecast['temp_min'][21:26]))
+
+            sky_6_string = (forecast['sky_hourly'][0:3])
             sky_6_filter = [s.replace('Thunderstorm', 'Storms') for s in sky_6_string]
             sky_6_filter = " | ".join(set(sky_6_filter))
 
-            sky_24_string = (forecast['h18_sky'], forecast['h21_sky'], forecast['h24_sky'], forecast['h27_sky'])
+            sky_24_string = (forecast['sky_hourly'][5:9])
             sky_24_filter = [s.replace('Thunderstorm', 'Storms') for s in sky_24_string]
             sky_24_filter = " | ".join(set(sky_24_filter))
 
-            sky_48_string = (forecast['h45_sky'], forecast['h48_sky'], forecast['h51_sky'], forecast['h54_sky'])
+            sky_48_string = (forecast['sky_hourly'][14:18])
             sky_48_filter = [s.replace('Thunderstorm', 'Storms') for s in sky_48_string]
             sky_48_filter = " | ".join(set(sky_48_filter))
 
-            sky_72_string = (forecast['h69_sky'], forecast['h72_sky'], forecast['h75_sky'], forecast['h78_sky'])
+            sky_72_string = (forecast['sky_hourly'][22:26])
             sky_72_filter = [s.replace('Thunderstorm', 'Storms') for s in sky_72_string]
             sky_72_filter = " | ".join(set(sky_72_filter))
 
