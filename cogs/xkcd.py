@@ -1,55 +1,83 @@
-import random
-import config
-import discord
 from discord.ext import commands
 import urllib.request
+import discord
+import random
+import config
 import json
 
-def random_image():
-    """ Returns a random Imgur URL from the selected file"""
-    collection = config.db['xkcd']
-    count = collection.count()
+# Source data: https://xkcd.com/json.html
 
-    random_selection = random.randint(1, count)
-    image = collection.find({'_id': random_selection})
+def xkcd_count():
+    """ Gets the total xkcd comics posted"""    # This is different than total in collection, unless recently updated
+    with urllib.request.urlopen("https://xkcd.com/info.0.json") as url:
+        data = json.loads(url.read().decode())
+        return data['num']
+
+def xkcd_random(self, context):
+    """ Returns a random xkcd"""
+    count = self.collection.count()
+    rnd = random.randint(1, count)
+    selection = self.collection.find({'_id': rnd})
+
+    for doc in selection:
+        return xkcd_output(context, doc)
+
+def xkcd_specific(self, context, num):
+    """ Returns a specific xkcd"""
+    image = self.collection.find({'_id': num})
 
     for doc in image:
-        return doc
+        return xkcd_output(context, doc)
+
+def xkcd_output(context, doc):
+    """ Converts document to discord embed"""
+    xkcd_embed = discord.Embed()
+    xkcd_embed.set_author(name=f"#{doc['_id']} {doc['title']}", url=f"https://xkcd.com/{doc['_id']}/")
+    xkcd_embed.set_image(url=doc['img'])
+    return context.send(embed=xkcd_embed)
 
 class xkcd(commands.Cog):
-    """Random and Relevant xkcd comics"""
+    """ Provides user with random and relevant xkcd comics"""
     def __init__(self, bot):
         self.bot = bot
+        self.collection = config.db['xkcd']
 
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command()
     async def xkcd(self, context):
-        doc = random_image()
+        """ Provides user with random and relevant xkcd comics
+        .xkcd       Random image
+        .xkcd [#]   Specific image
+        .xkcd [txt] Find most relevant image"""
+        args = context.message.content.lower().split(" ", 1)
 
-        xkcd_embed = discord.Embed()
-        xkcd_embed.set_author(name=f"#{doc['_id']} {doc['title']}", url=f"https://xkcd.com/{doc['_id']}/")
-        xkcd_embed.set_image(url=doc['img'])
+        if len(args) == 1:
+            return await xkcd_random(self, context)
 
-        await context.send(embed=xkcd_embed)
+        if args[1] == '404':
+            return  # I bet you think you're so clever
+
+        if int(args[1]) in range(1, xkcd_count()):
+            num = int(args[1])
+            return await xkcd_specific(self, context, num)
+
+        return
 
 
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command(alias=['xkcd_update'])
     async def update_xkcd(self, context):
-        collection = config.db['xkcd']
-        count = collection.count()
+        """ Updates the database with any missing entries"""
+        count = self.collection.count()
+        num = xkcd_count()
 
-        with urllib.request.urlopen("https://xkcd.com/info.0.json") as url:
-            data = json.loads(url.read().decode())
-            num = data['num']
-
-        for x in range(count, num):
+        for x in range(count + 1 , num + 1):
             with urllib.request.urlopen(f'https://xkcd.com/{x}/info.0.json') as url:
                 data = json.loads(url.read().decode())
                 json_data = {"_id": data['num'], "title": data['title'], "sum": data['transcript'], "img": data['img']}
-                collection.insert_one(json_data)
+                self.collection.insert_one(json_data)
 
-        await context.send('Updated `xkcd` database')
+        await context.send(f'Updated `xkcd` database with `{num - count}` new images')
 
 
 def setup(bot):
