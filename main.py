@@ -68,9 +68,10 @@ async def on_guild_remove(guild):
 
 def load_extensions():
     # Loads all of the extensions. Note: check iDM if I branch out to multiple folders
+    exclusion_list = []
     for filename in os.listdir('./cogs'):
         cog = filename[:-3]
-        if filename.endswith('.py'):
+        if filename.endswith('.py') and cog not in exclusion_list:
             try:
                 bot.load_extension(f'cogs.{cog}')
                 print(f'Loaded extension: {cog}')

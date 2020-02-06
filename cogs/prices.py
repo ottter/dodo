@@ -20,8 +20,8 @@ class Prices(commands.Cog):
         await context.send('To be added')
 
     @commands.cooldown(1, 3, commands.BucketType.user)
-    @commands.command(name='crypto', pass_context=True)
-    async def crypto(self, context):
+    @commands.command(name='coin', pass_context=True)
+    async def coin(self, context):
         """Outputs current information on Cryptocurrency"""
 
         base_url = 'https://coinmarketcap.com/currencies/'
@@ -75,7 +75,7 @@ class Prices(commands.Cog):
             time_since_update = config.datetime.timedelta(seconds=seconds_ago)
 
             crypto_embed = discord.Embed(title=f'{coin_name} - {coin_symbol}', url=base_url+coin_id, color=0x16e40c)
-            crypto_embed.set_author(name='Crypto Tracker')
+            crypto_embed.set_author(name='Cryptocurrency Price Tracker')
             crypto_embed.add_field(name='Current Price (in USD)', value=f'${price_usd}')
             crypto_embed.add_field(name='\u200b', value='\u200b')
             crypto_embed.add_field(name='Last Updated', value=f'{time_since_update}')
@@ -90,7 +90,7 @@ class Prices(commands.Cog):
         except urllib.error.HTTPError:
             await context.send('400 or 404 Error')
         except Exception as err:
-            print(f'crypto: Error: {err}\t Input: {args}')
+            print(f'coin: Error: {err}\t Input: {args}')
             await context.send('Unknown error')
 
 def setup(bot):

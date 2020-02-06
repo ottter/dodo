@@ -74,7 +74,7 @@ class People(commands.Cog):
         await add_image(context, 'lights')
 
     @commands.cooldown(1, 3, commands.BucketType.user)
-    @commands.command()
+    @commands.command(aliases=['jeb'])
     async def jebrim(self, context):
         """Shows you the best of Jebrim"""
 
