@@ -31,7 +31,7 @@ def xkcd_specific(self, context, num):
 
 def xkcd_output(context, doc):
     """ Converts document to discord embed"""
-    xkcd_embed = discord.Embed()
+    xkcd_embed = discord.Embed(color=0x16e40c)
     xkcd_embed.set_author(name=f"#{doc['_id']} {doc['title']}", url=f"https://xkcd.com/{doc['_id']}/")
     xkcd_embed.set_image(url=doc['img'])
     return context.send(embed=xkcd_embed)
@@ -65,13 +65,17 @@ class xkcd(commands.Cog):
 
 
     @commands.cooldown(1, 3, commands.BucketType.user)
-    @commands.command(alias=['xkcd_update'])
+    @commands.command(aliases=['xkcd_update'])
     async def update_xkcd(self, context):
         """ Updates the database with any missing entries"""
-        count = self.collection.count()
-        num = xkcd_count()
+        # +2 to compensate for 0 and 404 and +1 to compensate for 0
+        count = self.collection.count() + 2
+        num = xkcd_count() + 1
 
-        for x in range(count + 1 , num + 1):
+        if count == num:
+            return await context.send(f'No new comics to update')
+
+        for x in range(count, num):
             with urllib.request.urlopen(f'https://xkcd.com/{x}/info.0.json') as url:
                 data = json.loads(url.read().decode())
                 json_data = {"_id": data['num'], "title": data['title'], "sum": data['transcript'], "img": data['img']}
