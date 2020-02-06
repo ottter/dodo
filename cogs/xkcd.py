@@ -27,7 +27,7 @@ class xkcd(commands.Cog):
         doc = random_image()
 
         xkcd_embed = discord.Embed()
-        xkcd_embed.set_author(name=f"#{doc['_id']} {doc['title']}")
+        xkcd_embed.set_author(name=f"#{doc['_id']} {doc['title']}", url=f"https://xkcd.com/{doc['_id']}/")
         xkcd_embed.set_image(url=doc['img'])
 
         await context.send(embed=xkcd_embed)
