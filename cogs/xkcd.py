@@ -16,8 +16,8 @@ def random_image():
     for doc in image:
         return doc
 
-class Xkcd(commands.Cog):
-    """Channel-specific Quotes and memes"""
+class xkcd(commands.Cog):
+    """Random and Relevant xkcd comics"""
     def __init__(self, bot):
         self.bot = bot
 
@@ -53,4 +53,4 @@ class Xkcd(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Xkcd(bot))
+    bot.add_cog(xkcd(bot))
