@@ -115,5 +115,19 @@ class People(commands.Cog):
 
         await add_image(context, 'pgt')
 
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.command()
+    async def corona(self, context):
+        """Shows you the best Corona quotes"""
+
+        await random_image(context, 'corona')
+
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.command()
+    async def add_corona(self, context):
+        """Add to the Corona collection"""
+
+        await add_image(context, 'corona')
+
 def setup(bot):
     bot.add_cog(People(bot))
