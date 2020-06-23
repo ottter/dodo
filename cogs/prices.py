@@ -1,9 +1,42 @@
+from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
+from requests import Request, Session
 from discord.ext import commands
-from urllib.request import urlopen
-import urllib.error
-import discord
 import config
 import json
+
+def create_coin_dict(data, coin_symbol, fiat_currency):
+    coin_stats = data[coin_symbol]['quote'][fiat_currency]
+
+    data_dict = dict()
+    data_dict['coin_name'] = data[coin_symbol]['name']
+    data_dict['coin_symbol'] = data[coin_symbol]['symbol']
+    data_dict['current_price'] = coin_stats['price']
+    data_dict['percent_change_1h'] = coin_stats['percent_change_1h']
+    data_dict['percent_change_24h'] = coin_stats['percent_change_24h']
+    data_dict['percent_change_7d'] = coin_stats['percent_change_7d']
+    data_dict['last_updated'] = coin_stats['last_updated']
+    return data_dict
+
+def coin_output(data, args):
+    coin_symbol = args[1]
+    fiat_currency = 'USD'   #TODO: Accept other currency
+    data_dict = create_coin_dict(data, coin_symbol, fiat_currency)
+
+    # TODO: make below more pythonic
+    if data_dict['current_price'] > 1:
+        data_dict['current_price'] = round(data_dict['current_price'], 3)
+    if data_dict['current_price'] > 5:
+        data_dict['current_price'] = round(data_dict['current_price'], 2)
+
+    data_dict['graph_emoji'] = []
+    for x in [data_dict['percent_change_1h'], data_dict['percent_change_24h'], data_dict['percent_change_7d']]:
+        if x >= 0:
+            data_dict['graph_emoji'].append('📈')
+        else:
+            data_dict['graph_emoji'].append('📉')
+
+    print(data_dict)
+    return #should return the embed
 
 
 class Prices(commands.Cog):
@@ -20,78 +53,31 @@ class Prices(commands.Cog):
         await context.send('To be added')
 
     @commands.cooldown(1, 3, commands.BucketType.user)
-    @commands.command(name='coin', pass_context=True)
+    @commands.command(name='coins', pass_context=True)
     async def coin(self, context):
         """Outputs current information on Cryptocurrency"""
 
-        base_url = 'https://coinmarketcap.com/currencies/'
-        graph_url = 'https://s2.coinmarketcap.com/generated/sparklines/web/7d/usd/'
-        thumb_url = 'https://chainz.cryptoid.info/logo/'
-        # alt_url = 'https://coinmarketcap.com/coins/'
-
         args = context.message.content.upper().split(" ")
-        coin_name_url = '-'.join(args[1:3])
 
-        collection = config.db['cryptocurrency']
+        url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
+        parameters = {
+            'symbol': args[1]
+        }
+        headers = {
+            'Accepts': 'application/json',
+            'X-CMC_PRO_API_KEY': config.COINMARKET_KEY,
+        }
+
+        session = Session()
+        session.headers.update(headers)
 
         try:
-            results = collection.find({'coin_symbol': coin_name_url})
-            row = []
-            for result in results:
-                row = [result['coin_name'], result['coin_symbol']]
+            response = session.get(url, params=parameters)
+            data = json.loads(response.text)
+            return await coin_output(data['data'], args)
+        except (ConnectionError, Timeout, TooManyRedirects) as e:
+            print(e)
 
-            if not row:         # if arg = coin full name
-                pass
-            else:               # if arg = coin symbol
-                coin_name_url = row[0]
-
-            with urlopen(f"https://api.coinmarketcap.com/v1/ticker/{coin_name_url}/") as coin_api:
-                source = coin_api.read()
-            coin_api = json.loads(source[1:-1])
-
-            price_usd = float(coin_api['price_usd'])
-            coin_id = coin_api['id']
-            coin_name = coin_api['name']
-            coin_rank = coin_api['rank']
-            coin_symbol = coin_api['symbol']
-            percent_change_1h = float(coin_api['percent_change_1h'])
-            percent_change_24h = float(coin_api['percent_change_24h'])
-            percent_change_7d = float(coin_api['percent_change_7d'])
-            last_updated = int(coin_api['last_updated'])
-
-            if price_usd > 1:
-                price_usd = round(price_usd, 3)
-            if price_usd > 5:
-                price_usd = round(price_usd, 2)
-
-            graph_emoji = []
-            for x in [percent_change_1h, percent_change_24h, percent_change_7d]:
-                if x >= 0:
-                    graph_emoji.append('📈')
-                else:
-                    graph_emoji.append('📉')
-
-            seconds_ago = int(config.time.time()) - last_updated
-            time_since_update = config.datetime.timedelta(seconds=seconds_ago)
-
-            crypto_embed = discord.Embed(title=f'{coin_name} - {coin_symbol}', url=base_url+coin_id, color=0x16e40c)
-            crypto_embed.set_author(name='Cryptocurrency Price Tracker')
-            crypto_embed.add_field(name='Current Price (in USD)', value=f'${price_usd}')
-            crypto_embed.add_field(name='\u200b', value='\u200b')
-            crypto_embed.add_field(name='Last Updated', value=f'{time_since_update}')
-            crypto_embed.add_field(name='Last 1 Hour', value=f'{percent_change_1h}% {graph_emoji[0]}')
-            crypto_embed.add_field(name='Last 24 Hours', value=f'{percent_change_24h}% {graph_emoji[1]}')
-            crypto_embed.add_field(name='Last 7 Days', value=f'{percent_change_7d}% {graph_emoji[2]}')
-            crypto_embed.set_image(url=graph_url + coin_rank + '.png')
-            crypto_embed.set_thumbnail(url=thumb_url + coin_symbol + '.png')
-            crypto_embed.set_footer(text=f"Wrong information? Try '!help crypto' or go to {base_url}")
-            await context.send(embed=crypto_embed)
-
-        except urllib.error.HTTPError:
-            await context.send('400 or 404 Error')
-        except Exception as err:
-            print(f'coin: Error: {err}\t Input: {args}')
-            await context.send('Unknown error')
 
 def setup(bot):
     bot.add_cog(Prices(bot))

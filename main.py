@@ -65,6 +65,14 @@ async def on_guild_remove(guild):
     with open('./files/prefixes.json', 'w') as file:
         json.dump(prefixes, file, indent=4)
 
+@bot.event
+async def on_member_remove(member):
+    if member.guild.id == 563549980439347201:
+        channel = bot.get_channel(703752970894049320)
+        message = f'Cya {member.mention} you dummy'
+        await channel.send(message)
+
+
 
 def load_extensions():
     # Loads all of the extensions. Note: check iDM if I branch out to multiple folders
