@@ -1,6 +1,22 @@
 from discord.ext import commands
 from random import choice, randint
 
+def fbi_pasta_text(name, version):
+    pasta_1 = f"I, {name} , DECLARE THAT EVERY POST I HAVE EVER MADE ON THIS DISCORD IS SATIRE. I DO NOT CONDONE NOR " \
+              f"SUPPORT ANY OF THE OPINIONS EXPRESSED ON THIS CHATROOM."
+    pasta_2 = f"\n\nAny post associated with this IP is satire " \
+              f"and should be treated as such. At no point has anyone associated with this IP ever condoned, encouraged, " \
+              f"committed or abated acts of violence or threats of violence against any persons, regardless of racial, " \
+              f"ethnic, religious or cultural background.\n\nIn case of an investigation by any federal entity or similar, " \
+              f"I do not have any involvement with this group or with the people in it, I do not know how I am here, " \
+              f"probably added by a third party, I do not support any actions by the members of this group."
+    # spam_prev = "\n\n*React with `✔`️ for full pasta and `❌` for abbreviated version*"
+    if version == 0:
+        return pasta_1 + pasta_2    # Outputs the entire pasta
+    if version == 1:
+        return pasta_1              # Outputs just the opening paragraph
+    return pasta_1
+
 class Misc(commands.Cog):
     """Miscellaneous commands that did not fit in anywhere else"""
     def __init__(self, bot):
@@ -39,6 +55,36 @@ class Misc(commands.Cog):
         except Exception as err:
             print(err)
             await context.send('Format has to be in NdN! Example: 4d6')
+
+    @commands.cooldown(1, 2, commands.BucketType.user)
+    @commands.command(name='fbi', pass_context=True)
+    async def fbi_pasta(self, context):
+        user = context.message.author.mention
+        pasta = fbi_pasta_text(user, 0)
+        message = await context.send(pasta)
+
+        await message.add_reaction(emoji='✔️')
+        await message.add_reaction(emoji='❌')
+
+        i, emoji = [0, '']
+
+        while True:
+            if emoji == '✔️':
+                await message.edit(content=fbi_pasta_text(user, 0))
+            if emoji == '❌':
+                await message.edit(content=fbi_pasta_text(user, 1))
+
+            response = await self.bot.wait_for('reaction_add', timeout=60)
+            if response is None:
+                await message.edit(content=fbi_pasta_text(user, 1))
+                break
+
+            if str(response[1]) != 'Dodo#9228' and str(
+                    response[1]) != context.message.author.id:  # So bot doesn't trigger from it's own reactions
+                emoji = str(response[0].emoji)
+                await message.remove_reaction(response[0].emoji, response[1])
+
+        await context.clear_reactions(message)
 
     # TODO: word-association-metagame https://wordassociations.net/en random response
 
