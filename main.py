@@ -39,6 +39,12 @@ async def on_message(context):
     if context.author == bot.user:
         return
 
+    if message.startswith('!saj'):
+        await context.channel.send("I am here to inform you that Sajiel, developer of the #4 Dungeoneering software (with "
+                                   "3500 unique downloads!), has a girlfriend, drives a Camry, is a Comp Sci graduate "
+                                   "with six figure job, challenged Lights to a keyrace for the Lights Philsophy server, "
+                                   "is buying a house in upstate New York (ask for pics), and is definitely not fat."
+                                   "\nThanks for asking!")
     if message.find('!co2') != -1:
         await context.channel.send('Also CO2 is good for plants, meaning more CO2 means more life-sustaining oxygen '
                                    'and thus increase in agriculture as plants grow faster, more food, etc.')
