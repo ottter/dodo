@@ -58,7 +58,7 @@ def random_image(context, person):
 class People(commands.Cog):
     """Channel-specific Quotes and memes"""
     def __init__(self, bot):
-        self.bot = bot
+        self.bot: commands.Bot = bot
 
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command()
@@ -145,8 +145,14 @@ class People(commands.Cog):
 
         await add_image(context, 'corona')
     
+    async def get_user(self, alias):
+        id = config.db['aliases'].find_one({'aliases': alias})['_id']
+        return self.bot.get_user(id)
+    
     @commands.command(pass_context=True, alias='profile')
-    async def profile(self, context: commands.Context, user: discord.User):
+    async def profile(self, context: commands.Context, user):
+        user = await self.get_user(user)
+
         profiles = config.db['profiles']
         profile = profiles.find_one({'_id': user.id})
 
@@ -159,7 +165,8 @@ class People(commands.Cog):
         await context.send(embed=helper)
     
     @commands.command(pass_context=True, alias='set_profile')
-    async def set_profile(self, context: commands.Context, user: discord.User, *bio: str):
+    async def set_profile(self, context: commands.Context, user, *bio: str):
+        user = self.get_user(user)
         if str(context.message.author.id) in ['150125122408153088', '363762044396371970', '205144077144948737'] or context.message.author.id == user.id:
             profiles = config.db['profiles']
             profiles.update_one({'_id': user.id}, {'$set': {'bio': ' '.join(bio), 'author': context.message.author.display_name}}, upsert=True)

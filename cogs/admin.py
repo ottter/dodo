@@ -10,7 +10,18 @@ class Admin(commands.Cog):
     """Basic bot admin-level controls"""
     def __init__(self, bot):
         self.bot = bot
-    
+
+    @commands.command(alias='add_alias')
+    async def add_alias(self, context, user: discord.User, *alias):
+        if str(context.message.author.id) in admins:
+            if len(alias) > 1:
+                await context.send('The alias must be a single word.')
+                return 
+            
+            config.db['aliases'].update_one({'_id': user.id}, {'$addToSet': {'aliases': ' '.join(alias)}}, upsert=True)
+
+            await context.send('Successfully added alias.')
+
     @commands.command(alias='unban')
     async def unban_saj(self, context):
         if not str(context.message.author.id) in admins:
@@ -122,7 +133,6 @@ class Admin(commands.Cog):
         if str(context.message.author.id) in admins:
             print('Shutting down...')
             await self.bot.logout()
-
 
 def setup(bot):
     bot.add_cog(Admin(bot))
