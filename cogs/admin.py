@@ -4,7 +4,7 @@ import discord
 import config
 import json
 
-admins = ['150125122408153088']
+admins = ['150125122408153088', '363762044396371970', '205144077144948737']
 
 class Admin(commands.Cog):
     """Basic bot admin-level controls"""
