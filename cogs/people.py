@@ -25,7 +25,7 @@ def add_image(context, person):
     media_type = args[1].split('.')[-1]
 
     if not valid_host(host) and not valid_media_type(media_type):  # Tests for imgur image URL
-        return context.send(f'Man you must be as dumb as {person}. Use your fucking brain and try again.')
+        return context.send(f'Invalid URL, try again.')
 
     collection = config.db['people']
     collection.update_one({'image_url': args[1]}, {'$set': {'person': person}}, upsert=True)    # Prevents duplicates
