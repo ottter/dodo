@@ -11,7 +11,7 @@ class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.command(alias='unban_saj')
+    @commands.command(alias='unban')
     async def unban_saj(self, context):
         if not str(context.message.author.id) in admins:
             return

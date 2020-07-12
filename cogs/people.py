@@ -3,6 +3,7 @@ import random
 import config
 from discord.ext import commands
 import urllib
+import discord
 
 IMG_DIR = './images'    # Used in .csv method
 
@@ -143,6 +144,26 @@ class People(commands.Cog):
         """Add to the Corona collection"""
 
         await add_image(context, 'corona')
+    
+    @commands.command(pass_context=True, alias='profile')
+    async def profile(self, context: commands.Context, user: discord.User):
+        profiles = config.db['profiles']
+        profile = profiles.find({'person': user.id})
+
+        helper = discord.Embed(title=f'{user.display_name}\'s Profile', color=0x00ff00)
+        helper.set_thumbnail(url=user.avatar_url)
+        # helper.add_field(name='Bio', 
+        #                 value=f'{profile['bio']}\n\nThis profile was written by {profile['author']}.', 
+        #                 inline=False)
+
+        await context.send(embed=helper)
+    
+    @commands.command(pass_context=True, alias='set_profile')
+    async def set_profile(self, context: commands.Context, user: discord.User, bio: str):
+        profiles = config.db['profiles']
+        profiles.update_one({'bio': str, 'author': context.message.author.display_name}, {'$set': {'_id': user.id}})
+
+        await context.send(f'Added a profile for {user.display_name}.')
 
 def setup(bot):
     bot.add_cog(People(bot))
