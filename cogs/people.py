@@ -5,26 +5,12 @@ from discord.ext import commands
 
 IMG_DIR = './images'    # Used in .csv method
 
-def valid_host(host):
-    for accepted_host in config.accepted_hosts:
-        if host in accepted_host:
-            return True
-    
-    return False
-
-def valid_media_type(media_type):
-    return media_type in config.accepted_media_types
-
 def add_image(context, person):
     """ Tests the URL and adds to specific collection csv"""
     args = context.message.content.split(" ")
 
-    match = re.search('https?://(<host>).com/[A-z0-9]+\.(<media_type>)/?', args[1])
-    host = match.group('host')
-    media_type = match.group('media_type')
-
-    if not valid_host() and not valid_media_type():  # Tests for imgur image URL
-        return context.send(f'Man you must be as dumb as {person}. Use your fucking brain and try again.')
+    if not re.match('https?://i\.imgur\.com/[A-z0-9]+\.(png|jpg)/?', args[1]):  # Tests for imgur image URL
+        return context.send('Direct Imgur links only.')
 
     collection = config.db['people']
     collection.update_one({'image_url': args[1]}, {'$set': {'person': person}}, upsert=True)    # Prevents duplicates
