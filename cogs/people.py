@@ -2,6 +2,7 @@ import re
 import random
 import config
 from discord.ext import commands
+import urllib
 
 IMG_DIR = './images'    # Used in .csv method
 
@@ -19,11 +20,11 @@ def add_image(context, person):
     """ Tests the URL and adds to specific collection csv"""
     args = context.message.content.split(" ")
 
-    match = re.search('https?://(<host>).com/[A-z0-9]+\.(<media_type>)/?', args[1])
-    host = match.group('host')
-    media_type = match.group('media_type')
+    parsed_url = urllib.parse.urlparse(args[1])
+    host = parsed_url.hostname.split('.')[0]
+    media_type = args[1].split('.')[-1]
 
-    if not valid_host() and not valid_media_type():  # Tests for imgur image URL
+    if not valid_host(host) and not valid_media_type(media_type):  # Tests for imgur image URL
         return context.send(f'Man you must be as dumb as {person}. Use your fucking brain and try again.')
 
     collection = config.db['people']
