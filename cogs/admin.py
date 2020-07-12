@@ -10,7 +10,33 @@ class Admin(commands.Cog):
     """Basic bot admin-level controls"""
     def __init__(self, bot):
         self.bot = bot
+    
+    @commands.command(alias='unban_saj')
+    async def unban_saj(self, context):
+        if not str(context.message.author.id) in admins:
+            return
 
+        user = await self.bot.fetch_user(363762044396371970)
+        try:
+            await context.guild.unban(user)
+        except:
+            pass
+
+        member = context.message.author
+        channel = await member.create_dm()
+
+        link = await context.channel.create_invite(max_age = 300)
+        await channel.send(link)
+        
+        for role in context.guild.roles:
+            if role.name in ['OG', 'Current WORST poster', 'Current BEST Pogrammer', 'Big Stonker', 'Preppy muslim', 'SUPER TAXPAYER (100K+)']:
+                try:
+                    await member.add_roles(role)
+                except:
+                    continue
+
+        await context.send('Saj was unbanned.')
+        
     @commands.command(alias='dodo_prefix')
     async def change_prefix(self, context, prefix):
         """Custom prefixes on a per-server basis in order to prevent command overlap"""
