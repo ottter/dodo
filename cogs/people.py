@@ -150,7 +150,7 @@ class People(commands.Cog):
         profiles = config.db['profiles']
         profile = profiles.find_one({'_id': user.id})
 
-        helper = discord.Embed(title=f'{user.display_name}\'s Profile', color=0x00ff00)
+        helper = discord.Embed(title=f'{user.display_name if user.display_name[-1] != 's' else user.display_name[:-1]}\'s Profile', color=0x00ff00)
         helper.set_thumbnail(url=user.avatar_url)
         helper.add_field(name='Bio', 
                         value=f"{profile['bio']}\n\nThis profile was written by {profile['author']}.", 
@@ -160,10 +160,11 @@ class People(commands.Cog):
     
     @commands.command(pass_context=True, alias='set_profile')
     async def set_profile(self, context: commands.Context, user: discord.User, *bio: str):
-        profiles = config.db['profiles']
-        profiles.update_one({'bio': ' '.join(bio), 'author': context.message.author.display_name}, {'$set': {'_id': user.id}}, upsert=True)
+        if context.message.author.id in ['150125122408153088', '363762044396371970', '205144077144948737'] or context.message.author.id == user.id:
+            profiles = config.db['profiles']
+            profiles.update_one({'bio': ' '.join(bio), 'author': context.message.author.display_name}, {'$set': {'_id': user.id}}, upsert=True)
 
-        await context.send(f'Added a profile for {user.display_name}.')
+            await context.send(f'Added a profile for {user.display_name}.')
 
 def setup(bot):
     bot.add_cog(People(bot))
