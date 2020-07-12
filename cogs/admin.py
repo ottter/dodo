@@ -13,7 +13,7 @@ class Admin(commands.Cog):
 
     @commands.command(alias='add_alias')
     async def add_alias(self, context, user: discord.User, *alias):
-        if str(context.message.author.id) in admins:
+        if str(context.message.author.id) in admins or user.id == context.message.author.id:
             if len(alias) > 1:
                 await context.send('The alias must be a single word.')
                 return 
