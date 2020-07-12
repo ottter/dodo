@@ -150,7 +150,7 @@ class People(commands.Cog):
         profiles = config.db['profiles']
         profile = profiles.find_one({'_id': user.id})
 
-        helper = discord.Embed(title=f'{user.display_name}\'{'' if use.display_name[-1] == 's' else 's'} Profile', color=0x00ff00)
+        helper = discord.Embed(title=f'{user.display_name}\'{"" if user.display_name[-1] == "s" else "s"} Profile', color=0x00ff00)
         helper.set_thumbnail(url=user.avatar_url)
         helper.add_field(name='Bio', 
                         value=f"{profile['bio']}\n\nThis profile was written by {profile['author']}.", 
