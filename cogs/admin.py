@@ -45,8 +45,6 @@ class Admin(commands.Cog):
                     await member.add_roles(role)
                 except:
                     continue
-
-        await context.send('Saj was unbanned.')
         
     @commands.command(alias='dodo_prefix')
     async def change_prefix(self, context, prefix):
