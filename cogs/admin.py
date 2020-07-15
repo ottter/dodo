@@ -22,7 +22,7 @@ class Admin(commands.Cog):
 
             await context.send('Successfully added alias.')
 
-    @commands.command(alias='unban')
+    @commands.command(alias='unban_saj')
     async def unban_saj(self, context):
         if not str(context.message.author.id) in admins:
             return
@@ -40,7 +40,7 @@ class Admin(commands.Cog):
         await channel.send(link)
         
         for role in context.guild.roles:
-            if role.name in ['OG', 'Current WORST poster', 'Current BEST Pogrammer', 'Big Stonker', 'Preppy muslim', 'SUPER TAXPAYER (100K+)']:
+            if role.name in ['Philosopher', 'OG', 'Current WORST poster', 'Current BEST Pogrammer', 'Big Stonker', 'Preppy muslim', 'SUPER TAXPAYER (100K+)']:
                 try:
                     await member.add_roles(role)
                 except:
