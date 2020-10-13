@@ -130,6 +130,20 @@ class People(commands.Cog):
         """Add to the Pgt collection"""
 
         await add_image(context, 'pgt')
+        
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.command()
+    async def philo(self, context):
+        """Shows you the best of PhiloChat"""
+
+        await random_image(context, 'philo')
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command()
+    async def add_philo(self, context):
+        """Add to the PhiloChat collection"""
+
+        await add_image(context, 'philo')
 
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command()
