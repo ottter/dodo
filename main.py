@@ -73,8 +73,8 @@ async def on_guild_remove(guild):
 
 @bot.event
 async def on_member_remove(member):
-    if member.guild.id == 765694107690991647:
-        channel = bot.get_channel(765695723244486716)
+    if member.guild.id == 563549980439347201:
+        channel = bot.get_channel(703752970894049320)
         message = f'Cya {member} you dummy'
         await channel.send(message)
 
