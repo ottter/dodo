@@ -12,7 +12,7 @@ def fbi_pasta_text(name, version):
               f"probably added by a third party, I do not support any actions by the members of this group."
     # spam_prev = "\n\n*React with `✔`️ for full pasta and `❌` for abbreviated version*"
     if version == 0:
-        return pasta_1 + pasta_2    # Outputs the entire pasta
+        return pasta_1 # + pasta_2    # Outputs the entire pasta
     if version == 1:
         return pasta_1              # Outputs just the opening paragraph
     return pasta_1
