@@ -15,6 +15,8 @@ def get_prefix(client, message):
 bot = commands.Bot(command_prefix = get_prefix)
 bot.remove_command('help')
 
+intents = discord.Intents.default()
+intents.members = True
 
 @bot.event
 async def on_ready():
