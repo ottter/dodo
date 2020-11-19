@@ -2,6 +2,7 @@ import config
 import json
 import time
 import os
+import discord
 from discord.ext import commands
 
 def get_prefix(client, message):
