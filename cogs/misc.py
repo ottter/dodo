@@ -57,7 +57,7 @@ class Misc(commands.Cog):
             await context.send('Format has to be in NdN! Example: 4d6')
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(name='fbi', pass_context=True)
+    @commands.command(name='fbi', aliases=['cia', 'nsa'], pass_context=True)
     async def fbi_pasta(self, context):
         user = context.message.author.mention
         pasta = fbi_pasta_text(user, 0)
