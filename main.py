@@ -41,6 +41,10 @@ async def on_message(context):
     message = str(context.content.lower())
     if context.author == bot.user:
         return
+    
+    if context.author == 565715297097744384:
+        channel = client.get_channel(563849668379803678)
+        await channel.edit(name="bidens-podium")
 
     if message.startswith('!saj'):
         await context.channel.send("I am here to inform you that Sajiel, developer of the #4 Dungeoneering software (with "
