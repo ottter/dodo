@@ -47,9 +47,9 @@ def forecast_data(raw_api_dict):
         country=raw_api_dict.get('city').get('country'),
         population=raw_api_dict.get('city').get('population'),
 
-        sky_hourly = hourly_sky,
-        temp_max = hourly_max,
-        temp_min = hourly_min,
+        sky_hourly=hourly_sky,
+        temp_max=hourly_max,
+        temp_min=hourly_min,
     )
     return forecast
 
@@ -82,7 +82,7 @@ def weather_data(raw_api_dict):
 
     wind_direction = {range(337, 361): 'N', range(0, 22): 'N', range(22, 67): 'NE', range(67, 112): 'E',
                       range(112, 157): 'SE', range(157, 202): 'S', range(202, 247): 'SW', range(247, 292): 'W',
-                      range(292, 337): 'NW', range(-1,0): '\u200b'}
+                      range(292, 337): 'NW', range(-1, 0): '\u200b'}
 
     for k in wind_direction:
         if weather['wind_deg'] in k:
@@ -93,6 +93,7 @@ def weather_data(raw_api_dict):
 
 class Weather(commands.Cog):
     """Weather and Forecast updates"""
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -342,6 +343,7 @@ class Weather(commands.Cog):
 
         else:
             await context.send('Accepted Inputs: `.wset home [city name/city id]` and `.wset unit [F/C]`')
+
 
 def setup(bot):
     bot.add_cog(Weather(bot))

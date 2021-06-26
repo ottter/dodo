@@ -7,6 +7,7 @@ import discord
 
 IMG_DIR = './images'    # Used in .csv method
 
+
 def valid_host(host):
     for accepted_host in config.accepted_hosts:
         if host in accepted_host:
@@ -14,8 +15,10 @@ def valid_host(host):
     
     return False
 
+
 def valid_media_type(media_type):
     return media_type in config.accepted_media_types
+
 
 def add_image(context, person):
     """ Tests the URL and adds to specific collection csv"""
