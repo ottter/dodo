@@ -59,7 +59,7 @@ class Admin(commands.Cog):
 
         channel = await user.create_dm()
 
-        link = await context.channel.create_invite(max_age=300)
+        link = await context.channel.create_invite()
         await channel.send(link)
         
     @commands.command(alias='dodo_prefix')
