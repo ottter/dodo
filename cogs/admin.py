@@ -47,21 +47,20 @@ class Admin(commands.Cog):
                     continue
 
     @commands.command()
-    async def unban(self, context, member: discord.Member.id):
+    async def unban(self, context, user_id: int):
         if not str(context.message.author.id) in admins:
             return
 
-        user = await self.bot.fetch_user(member)
+        user = await self.bot.fetch_user(user_id)
         try:
             await context.guild.unban(user)
         except:
             pass
 
-        # member = self.bot.get_user_info(str(user_id))
-        channel = await member.create_dm()
+        channel = await user.create_dm()
 
         link = await context.channel.create_invite(max_age=300)
-        await channel.send(member, link)
+        await channel.send(user_id, link)
         
     @commands.command(alias='dodo_prefix')
     async def change_prefix(self, context, prefix):
