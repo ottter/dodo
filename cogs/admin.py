@@ -48,11 +48,16 @@ class Admin(commands.Cog):
 
     @commands.command()
     async def unban(self, context, user_id):
+        if not str(context.message.author.id) in admins:
+            return
+
         common_users = {
-            "elena": 273532188803203072,
-            "morgan": 209385907101368322,
+            "elena": 209385907101368322,
+            "morgan": 273532188803203072,
             "saj": 328043851891605506,
             "swims": 193427271992868864,
+            "miles": 149187078981287936,
+            "zin": 240046314321084417,
         }
 
         if user_id in common_users:
@@ -65,11 +70,9 @@ class Admin(commands.Cog):
             pass
 
         channel = await user.create_dm()
-        invite_link = 'https://discord.gg/HmMErQwVAZ'
-        link = await context.channel.create_invite()
-        await channel.send(f'{invite_link} USE THE FIRST LINK IF POSSIBLE {link}')
-        print(f'attempt to unban: {user_id}')
-        print(f'user data: {user}')
+        link = await context.channel.create_invite(max_uses=1)
+        await channel.send(link)
+        print(f'attempt to unban: {user_id}, aka {user}')
         
     @commands.command(alias='dodo_prefix')
     async def change_prefix(self, context, prefix):
