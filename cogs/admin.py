@@ -68,6 +68,8 @@ class Admin(commands.Cog):
         invite_link = 'https://discord.gg/HmMErQwVAZ'
         link = await context.channel.create_invite()
         await channel.send(f'{invite_link} USE THE FIRST LINK IF POSSIBLE {link}')
+        print(f'attempt to unban: {user_id}')
+        print(f'user data: {user}')
         
     @commands.command(alias='dodo_prefix')
     async def change_prefix(self, context, prefix):
