@@ -47,7 +47,16 @@ class Admin(commands.Cog):
                     continue
 
     @commands.command()
-    async def unban(self, context, user_id: int):
+    async def unban(self, context, user_id):
+        common_users = {
+            "elena": 273532188803203072,
+            "morgan": 209385907101368322,
+            "saj": 328043851891605506,
+            "swims": 193427271992868864,
+        }
+
+        if user_id in common_users:
+            user_id = common_users[user_id]
 
         user = await self.bot.fetch_user(user_id)
         try:
@@ -56,9 +65,9 @@ class Admin(commands.Cog):
             pass
 
         channel = await user.create_dm()
-
+        invite_link = 'https://discord.gg/HmMErQwVAZ'
         link = await context.channel.create_invite()
-        await channel.send(link)
+        await channel.send(f'{invite_link} USE THE FIRST LINK IF POSSIBLE {link}')
         
     @commands.command(alias='dodo_prefix')
     async def change_prefix(self, context, prefix):

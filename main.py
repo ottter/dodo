@@ -35,9 +35,6 @@ async def ping(context):
     message = await context.channel.send("Pong!")
     server_ping = f'Ping: {int((time.monotonic() - before) * 1000)}ms'
 
-    ban_users = await context.guild.bans()
-    print(ban_users)
-
     await message.edit(content=server_ping)
 
 @bot.event
@@ -60,6 +57,7 @@ async def on_message(context):
                  273532188803203072,    # twi
                  193427271992868864,    # swi
                  256447155005292546,    # lou
+                 328043851891605506,    # saj
                  ]
     for ban_user in ban_users:
         ban_user = await bot.fetch_user(ban_user)
