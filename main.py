@@ -5,6 +5,7 @@ import os
 import discord
 from discord.ext import commands
 
+
 def get_prefix(client, message):
     try:
         with open('./files/prefixes.json', 'r') as file:
@@ -13,11 +14,13 @@ def get_prefix(client, message):
     except:
         return '.'
 
+
 bot = commands.Bot(command_prefix = get_prefix)
 bot.remove_command('help')
 
 intents = discord.Intents.default()
 intents.members = True
+
 
 @bot.event
 async def on_ready():
@@ -37,6 +40,7 @@ async def ping(context):
 
     await message.edit(content=server_ping)
 
+
 @bot.event
 async def on_message(context):
     message = str(context.content.lower())
@@ -55,6 +59,7 @@ async def on_message(context):
 
     await bot.process_commands(context)
 
+
 @bot.event
 async def on_guild_join(guild):
     # TODO: Create server join message
@@ -64,6 +69,7 @@ async def on_guild_join(guild):
     prefixes[str(guild.id)] = "."
     with open('./files/prefixes.json', 'w') as file:
         json.dump(prefixes, file, indent=4)
+
 
 @bot.event
 async def on_guild_remove(guild):
@@ -75,13 +81,15 @@ async def on_guild_remove(guild):
     with open('./files/prefixes.json', 'w') as file:
         json.dump(prefixes, file, indent=4)
 
+
 @bot.event
 async def on_member_remove(member):
-    if member.guild.id == 563549980439347201:
-        channel = bot.get_channel(703752970894049320)
+    philoco = 563549980439347201
+    welcome = 703752970894049320
+    if member.guild.id == philoco:
+        channel = bot.get_channel(welcome)
         message = f'Cya {member} you dummy'
         await channel.send(message)
-
 
 
 def load_extensions():
@@ -97,6 +105,7 @@ def load_extensions():
                 exc = f'{type(err).__name__}: {err}'
                 print(f'Failed to load extension {cog}\n{exc}')
 
+
 def log_in():
     load_extensions()
     print('Attempting to log in...')
@@ -105,6 +114,7 @@ def log_in():
     except Exception as error:
         print('Discord: Unsuccessful login. Error: ', error)
         quit()
+
 
 if __name__ == '__main__':
     log_in()

@@ -48,8 +48,8 @@ class Admin(commands.Cog):
 
     @commands.command()
     async def unban(self, context, user_id):
-        if not str(context.message.author.id) in admins:
-            return
+        # if not str(context.message.author.id) in admins:
+        #     return
 
         common_users = {
             "elena": 209385907101368322,
@@ -59,6 +59,8 @@ class Admin(commands.Cog):
             "miles": 149187078981287936,
             "zin": 240046314321084417,
         }
+        if user_id == 'me':
+            user_id = context.message.author.id
 
         if user_id in common_users:
             user_id = common_users[user_id]
