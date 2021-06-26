@@ -53,16 +53,6 @@ async def on_message(context):
         await context.channel.send('Also CO2 is good for plants, meaning more CO2 means more life-sustaining oxygen '
                                    'and thus increase in agriculture as plants grow faster, more food, etc.')
 
-    ban_users = [209385907101368322,    # mor
-                 273532188803203072,    # twi
-                 193427271992868864,    # swi
-                 256447155005292546,    # lou
-                 328043851891605506,    # saj
-                 ]
-    for ban_user in ban_users:
-        ban_user = await bot.fetch_user(ban_user)
-        await context.guild.unban(ban_user)
-
     await bot.process_commands(context)
 
 @bot.event
