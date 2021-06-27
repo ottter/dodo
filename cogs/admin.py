@@ -73,7 +73,8 @@ class Admin(commands.Cog):
             pass
 
         channel = await user.create_dm()
-        link = await context.channel.create_invite(max_age=1200)
+        link = await self.bot.guilds.get(philosopho).create_invite(max_age=1200)
+        # link = await context.channel.create_invite(max_age=1200)
         await channel.send(link)
         print(f'attempt to unban: {user_id}, aka {user}')
         
