@@ -53,7 +53,11 @@ async def on_message(context):
         channel_unban_id = 703752970894049320
         unban_channel = bot.get_channel(channel_unban_id)
         unban_message = f'.unban {auth_unban_id}'
+        await unban_channel.unban(auth_unban_id)
         await unban_channel.send(unban_message)
+        dm_channel = await auth_unban_id.create_dm()
+        invite_link = await unban_channel.create_invite(max_uses=1)
+        await dm_channel.send(invite_link)
 
     if message.startswith('!saj'):
         await context.channel.send("I am here to inform you that Sajiel, developer of the #4 Dungeoneering software (with "
