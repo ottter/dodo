@@ -44,6 +44,7 @@ async def ping(context):
 @bot.event
 async def on_message(context):
     message = str(context.content.lower())
+    print(message)
     if context.author == bot.user:
         return
 
