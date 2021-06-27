@@ -52,7 +52,7 @@ class Admin(commands.Cog):
         #     return
 
         philosopho = 563549980439347201
-
+        print(context.guild.id)
         if context.guild.id != philosopho:
             print('unban message sent from wrong channel')
             return
