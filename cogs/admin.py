@@ -67,6 +67,8 @@ class Admin(commands.Cog):
 
         user = await self.bot.fetch_user(user_id)
         try:
+            server = context.guild
+            print(server)
             await context.guild.unban(user)
         except:
             pass
