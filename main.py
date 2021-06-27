@@ -48,15 +48,6 @@ async def on_message(context):
     if context.author == bot.user:
         return
 
-    if message.startswith('123unban'):
-        auth_unban_id = context.author.id
-        channel_unban_id = 563549980439347201
-        unban_channel = bot.get_channel(channel_unban_id)
-        await unban_channel.unban(auth_unban_id)
-        dm_channel = await auth_unban_id.create_dm()
-        invite_link = await unban_channel.create_invite(max_uses=1)
-        await dm_channel.send(invite_link)
-
     if message.startswith('!saj'):
         await context.channel.send("I am here to inform you that Sajiel, developer of the #4 Dungeoneering software (with "
                                    "3500 unique downloads!), has a girlfriend, drives a Camry, is a Comp Sci graduate "

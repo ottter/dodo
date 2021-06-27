@@ -51,6 +51,7 @@ class Admin(commands.Cog):
         # if not str(context.message.author.id) in admins:
         #     return
 
+        philosopho = 563549980439347201
         common_users = {
             "elena": 209385907101368322,
             "morgan": 273532188803203072,
@@ -64,15 +65,15 @@ class Admin(commands.Cog):
 
         if user_id in common_users:
             user_id = common_users[user_id]
-
         user = await self.bot.fetch_user(user_id)
         try:
-            await context.guild.unban(user)
+            await self.bot.guilds.get(philosopho).unban(user)
+            # await context.guild.unban(user)
         except:
             pass
 
         channel = await user.create_dm()
-        link = await context.channel.create_invite(max_uses=1)
+        link = await context.channel.create_invite(max_age=1200)
         await channel.send(link)
         print(f'attempt to unban: {user_id}, aka {user}')
         
