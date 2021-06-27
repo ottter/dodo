@@ -44,7 +44,9 @@ async def ping(context):
 @bot.event
 async def on_message(context):
     message = str(context.content.lower())
-    print(message)
+
+    if context.Attachment.url:
+        print(context.Attachment.url)
     if context.author == bot.user:
         return
 
@@ -57,6 +59,7 @@ async def on_message(context):
     if message.find('!co2') != -1:
         await context.channel.send('Also CO2 is good for plants, meaning more CO2 means more life-sustaining oxygen '
                                    'and thus increase in agriculture as plants grow faster, more food, etc.')
+    print(message)
 
     await bot.process_commands(context)
 
