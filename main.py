@@ -48,6 +48,13 @@ async def on_message(context):
     if context.author == bot.user:
         return
 
+    if message.startswith('123unban'):
+        auth_unban_id = context.author.id
+        channel_unban_id = 703752970894049320
+        unban_channel = bot.get_channel(channel_unban_id)
+        unban_message = f'.unban {auth_unban_id}'
+        await unban_channel.send(unban_message)
+
     if message.startswith('!saj'):
         await context.channel.send("I am here to inform you that Sajiel, developer of the #4 Dungeoneering software (with "
                                    "3500 unique downloads!), has a girlfriend, drives a Camry, is a Comp Sci graduate "
@@ -57,7 +64,6 @@ async def on_message(context):
     if message.find('!co2') != -1:
         await context.channel.send('Also CO2 is good for plants, meaning more CO2 means more life-sustaining oxygen '
                                    'and thus increase in agriculture as plants grow faster, more food, etc.')
-    print(message)
 
     await bot.process_commands(context)
 
