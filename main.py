@@ -45,8 +45,9 @@ async def ping(context):
 async def on_message(context):
     message = str(context.content.lower())
 
-    if discord.Attachment.url:
+    if discord.Attachment:
         print(discord.Attachment.url)
+        print(discord.Attachment.proxy_url)
     if context.author == bot.user:
         return
 
